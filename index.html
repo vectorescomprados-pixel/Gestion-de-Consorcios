@@ -2,62 +2,61 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consorcio Hub - Administrador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Consorcio Hub - Panel Central</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
         :root {
-            --bg-dark: #0b0f19;
-            --card-bg: #1a1f2b;
+            --bg-dark: #0b141a; /* Color de fondo de tus capturas */
+            --card-bg: #111b21; /* Color de tarjetas de tus capturas */
             --primary-blue: #2563eb;
             --status-orange: #f59e0b;
-            --status-red: #dc2626;
-            --status-grey: #4b5563;
-            --text-white: #e5e7eb;
+            --status-red: #e11d48;
+            --status-grey: #64748b;
+            --text-white: #e9edef;
+            --border: #222d34;
         }
 
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+        
         body {
             background-color: var(--bg-dark);
             color: var(--text-white);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            align-items: center;
         }
 
-        /* Header similar a tus capturas */
+        .wrap { width: 100%; max-width: 450px; }
+
+        /* Barra Superior Azul */
         .header {
             background-color: var(--primary-blue);
-            padding: 10px 15px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
+            font-size: 11px;
             font-weight: bold;
-            letter-spacing: 0.5px;
+            width: 100%;
         }
 
-        .search-container {
-            padding: 15px;
-        }
-
+        .search-container { padding: 15px; }
         .search-bar {
-            background-color: #111827;
-            border: 1px solid #374151;
+            background-color: #000;
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;
             color: white;
             width: 100%;
-            box-sizing: border-box;
             outline: none;
         }
 
-        /* Grid de Botones (Acceso a tus otras Apps) */
+        /* Cuadrícula de Botones */
         .app-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -67,42 +66,45 @@
 
         .btn-app {
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 25px 10px;
             color: white;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 0.7rem;
+            font-size: 11px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        .btn-app:active { transform: scale(0.98); }
-        .blue { background-color: var(--primary-blue); }
-        .orange { background-color: var(--status-orange); }
-        .grey { background-color: var(--status-grey); }
-        .red { background-color: var(--status-red); }
+        .btn-app:active { transform: scale(0.96); }
+        .blue { background: var(--primary-blue); }
+        .orange { background: var(--status-orange); color: #000; }
+        .grey { background: var(--status-grey); }
+        .red { background: var(--status-red); }
 
-        /* Muro de Avisos / Tarjetas de Resumen */
         .section-title {
             padding: 10px 15px;
-            font-size: 0.75rem;
-            color: #9ca3af;
+            font-size: 11px;
+            color: #8696a0;
             text-transform: uppercase;
             font-weight: bold;
         }
 
+        /* Tarjetas con indicador lateral */
         .card {
             background-color: var(--card-bg);
             margin: 0 15px 10px 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
         }
 
-        /* El borde lateral de color que pediste */
         .card::before {
             content: '';
             width: 6px;
@@ -111,134 +113,121 @@
             left: 0;
         }
 
-        .card-content {
-            padding: 15px 15px 15px 22px;
-        }
-
-        .card-title { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 2px; }
-        .card-info { font-size: 0.8rem; color: #9ca3af; }
+        .card-content { padding: 15px 15px 15px 22px; }
+        .card-title { font-weight: bold; font-size: 15px; display: block; margin-bottom: 3px; color: var(--primary-blue); }
+        .card-info { font-size: 13px; color: #8696a0; }
 
         .border-orange::before { background-color: var(--status-orange); }
         .border-blue::before { background-color: var(--primary-blue); }
         .border-red::before { background-color: var(--status-red); }
 
-        .footer-action {
-            margin-top: auto;
-            padding: 20px 15px;
-        }
-
-        .btn-logout {
-            background-color: var(--status-red);
+        .footer { margin-top: auto; padding: 20px 15px; }
+        .btn-exit {
+            background: var(--status-red);
             color: white;
             text-align: center;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: bold;
+            font-size: 12px;
             cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <span>● EN LÍNEA - SEGURIDAD ACTIVA</span>
-        <span id="reloj">21:00</span>
-    </div>
-
-    <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Buscar por Unidad o Apellido...">
-    </div>
-
-    <div class="app-grid">
-        <button class="btn-app blue" onclick="abrirApp('gestion_uf')">Gestionar<br>Unidades</button>
-        <button class="btn-app orange" onclick="abrirApp('reparaciones')">Reparaciones<br>Activas</button>
-        <button class="btn-app grey" onclick="abrirApp('cocheras')">Control<br>Cocheras</button>
-        <button class="btn-app red" onclick="abrirApp('salon')">Reserva<br>SUM / Salón</button>
-    </div>
-
-    <div class="section-title">Estado del Consorcio</div>
-
-    <div class="card border-orange">
-        <div class="card-content">
-            <span class="card-title">Reparaciones</span>
-            <span class="card-info" id="fb-reparaciones">Cargando...</span>
+    <div class="wrap">
+        <div class="header">
+            <span>● EN LÍNEA - SEGURIDAD ACTIVA</span>
+            <span id="reloj">00:00</span>
         </div>
-    </div>
 
-    <div class="card border-blue">
-        <div class="card-content">
-            <span class="card-title">Próximo Evento</span>
-            <span class="card-info" id="fb-evento">Cargando...</span>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Buscar por Unidad o Apellido...">
         </div>
-    </div>
 
-    <div class="card border-red">
-        <div class="card-content">
-            <span class="card-title">Disponibilidad Cocheras</span>
-            <span class="card-info" id="fb-cocheras">Cargando...</span>
+        <div class="app-grid">
+            <button class="btn-app blue" onclick="ir('unidades')">Gestión<br>Unidades</button>
+            <button class="btn-app orange" onclick="ir('reparaciones')">Reparaciones<br>Integrales</button>
+            <button class="btn-app grey" onclick="ir('cocheras')">Control de<br>Cocheras</button>
+            <button class="btn-app red" onclick="ir('salon')">Reservas de<br>Salón</button>
         </div>
-    </div>
 
-    <div class="footer-action">
-        <div class="btn-logout" onclick="cerrarSesion()">FINALIZAR SESIÓN</div>
+        <div class="section-title">Resumen del Edificio</div>
+
+        <div class="card border-orange">
+            <div class="card-content">
+                <span class="card-title">Mantenimiento</span>
+                <span class="card-info" id="txt-rep">Sincronizando...</span>
+            </div>
+        </div>
+
+        <div class="card border-blue">
+            <div class="card-content">
+                <span class="card-title">Eventos SUM</span>
+                <span class="card-info" id="txt-event">Sincronizando...</span>
+            </div>
+        </div>
+
+        <div class="card border-red">
+            <div class="card-content">
+                <span class="card-title">Cocheras</span>
+                <span class="card-info" id="txt-coch">Sincronizando...</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="btn-exit" onclick="salir()">CERRAR SESIÓN SEGURA</div>
+        </div>
     </div>
 
     <script>
-        // 1. CONFIGURACIÓN DE TU FIREBASE (COPIALA DE TU CONSOLA)
+        // Configuración de Firebase
         const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            projectId: "gestionuf-remoto", // Según tu captura
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
+            apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo",
+            authDomain: "gestionuf-remoto.firebaseapp.com",
+            projectId: "gestionuf-remoto",
+            storageBucket: "gestionuf-remoto.firebasestorage.app",
+            messagingSenderId: "724452752860",
+            appId: "1:724452752860:web:4d25585addcdcbd146e319"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. LÓGICA DE ACTUALIZACIÓN EN TIEMPO REAL
-        // Aquí leemos la colección 'resumen_consorcio' y el documento 'estado_actual'
+        // Escucha en tiempo real de la colección 'resumen_consorcio'
         db.collection("resumen_consorcio").doc("estado_actual")
             .onSnapshot((doc) => {
                 if (doc.exists) {
-                    const data = doc.data();
-                    
-                    // Actualizamos los textos con los campos int64 y string
-                    document.getElementById("fb-reparaciones").innerText = 
-                        (data.reparaciones_activas || 0) + " pendientes de revisión";
-                    
-                    document.getElementById("fb-evento").innerText = 
-                        data.proximo_evento || "Sin reservas hoy";
-                    
-                    document.getElementById("fb-cocheras").innerText = 
-                        (data.cocheras_libres || 0) + " lugares libres para visitas";
-                } else {
-                    console.log("El documento no existe. Verificá el ID en Firebase.");
+                    const d = doc.data();
+                    document.getElementById("txt-rep").innerText = (d.reparaciones_activas || 0) + " reparaciones en curso";
+                    document.getElementById("txt-event").innerText = d.proximo_evento || "No hay reservas próximas";
+                    document.getElementById("txt-coch").innerText = (d.cocheras_libres || 0) + " espacios disponibles";
                 }
             });
 
-        // 3. NAVEGACIÓN
-        function abrirApp(pagina) {
-            // Esto asume que tus otros archivos están en la misma carpeta
-            // Ejemplo: gestion_uf.html, reparaciones.html, etc.
-            window.location.href = pagina + ".html";
+        // Función Navegación con tus URLs de GitHub
+        function ir(app) {
+            const urls = {
+                'unidades': 'https://vectorescomprados-pixel.github.io/GestionUF-Comercial/',
+                'salon': 'https://vectorescomprados-pixel.github.io/reservas_salon/',
+                'cocheras': 'https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/',
+                'reparaciones': 'https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/'
+            };
+            window.location.href = urls[app];
         }
 
-        function cerrarSesion() {
-            if(confirm("¿Desea cerrar el sistema de gestión de forma segura?")) {
-                // Aquí podrías limpiar algún login si usas Auth
-                alert("Sesión cerrada");
+        function salir() {
+            if(confirm("¿Desea cerrar el sistema?")) {
+                localStorage.clear();
+                location.reload();
             }
         }
 
-        // Reloj simple para la barra superior
+        // Reloj de la cabecera
         setInterval(() => {
-            const ahora = new Date();
-            document.getElementById('reloj').innerText = ahora.getHours() + ":" + ahora.getMinutes().toString().padStart(2, '0');
+            const n = new Date();
+            document.getElementById('reloj').innerText = n.getHours() + ":" + n.getMinutes().toString().padStart(2, '0');
         }, 1000);
     </script>
 </body>
