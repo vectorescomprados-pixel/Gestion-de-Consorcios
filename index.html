@@ -10,8 +10,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/553/553370.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/553/553370.png">
+
+    <link rel="icon" type="image/png" href="icono.png">
+    <link rel="apple-touch-icon" href="icono.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -34,13 +35,13 @@
 
         #status-bar { color: var(--success); font-size: 11px; font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
 
-        /* 📊 CONSOLA DE ESTADOS */
+        /* 📊 CONSOLA DE ESTADOS (Recuperada) */
         .console-container {
             width: 95%; max-width: 450px; margin-top: 15px;
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
         }
         .console-item {
-            background: rgba(37, 99, 235, 0.05); border: 1px solid var(--border);
+            background: rgba(37, 99, 235, 0.08); border: 1px solid var(--border);
             padding: 12px 5px; border-radius: 15px; text-align: center;
         }
         .console-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
@@ -68,7 +69,7 @@
         .modal-content { background: var(--card); padding: 35px 25px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; border: 1px solid var(--primary); }
         
         input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: #0b141a; color: white; font-size: 18px; text-align: center; outline: none; }
-        .btn { padding: 16px; width: 100%; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .btn { padding: 16px; width: 100%; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-primary { background: var(--primary); color: white; margin-top: 15px; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: #2a3942; color: #e9edef; }
@@ -87,18 +88,20 @@
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <i class="fas fa-fingerprint" style="font-size: 55px; color: var(--primary); margin-bottom: 20px;"></i>
+            <div style="margin-bottom: 20px;">
+                <img src="icono.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 20%;">
+            </div>
             <h2 style="margin-bottom: 5px;">Sistema Carga 87</h2>
             <p style="font-size: 12px; opacity: 0.5; margin-bottom: 25px;">TORRE URQUIZA 4750</p>
             <input type="password" id="pass" placeholder="Clave Maestra" inputmode="numeric">
-            <button class="btn btn-primary" onclick="login()">ACCEDER</button>
+            <button class="btn btn-primary" onclick="login()">ENTRAR</button>
         </div>
     </div>
 
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
             <div id="status-bar">● CONEXIÓN SEGURA - SEGURIDAD ACTIVA</div>
-            <h1 style="font-size: 26px;">HUB CENTRAL</h1>
+            <h1 style="font-size: 24px;">HUB CENTRAL</h1>
             <p style="font-size: 14px; color: var(--primary); font-weight: bold;">Edificio Torre Urquiza 4750</p>
         </header>
 
@@ -150,7 +153,7 @@
                 <i class="fas fa-sign-out-alt" style="font-size: 40px; color: var(--danger);"></i>
             </div>
             <h3>Finalizar Sesión</h3>
-            <p style="margin: 15px 0 30px; font-size: 15px; opacity: 0.8;">¿Desea cerrar el sistema de gestión de forma segura?</p>
+            <p style="margin: 15px 0 30px; font-size: 15px; opacity: 0.8;">¿Desea cerrar el sistema de forma segura?</p>
             <div style="display: flex; gap: 12px;">
                 <button class="btn btn-danger" style="flex: 1;" onclick="confirmarSalida()">SALIR</button>
                 <button class="btn btn-ghost" style="flex: 1;" onclick="cerrarCartelSalida()">VOLVER</button>
@@ -179,7 +182,7 @@
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
             
-            // CONSOLA EN TIEMPO REAL
+            // Lógica Consola Firebase
             onSnapshot(query(collection(db, "cocheras_edificio"), where("prop", "==", "S/D")), (snap) => {
                 document.getElementById("stat-cocheras").innerText = snap.size;
             });
@@ -198,7 +201,6 @@
         window.cerrarCartelSalida = () => document.getElementById("modal-logout").classList.add("hidden");
         window.confirmarSalida = () => { localStorage.removeItem("session_hub_2026"); location.reload(); };
 
-        // REGISTRO SERVICE WORKER
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log(e)); });
         }
