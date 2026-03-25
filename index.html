@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>HUB - Gestión de Consorcios</title>
+    <title>HUB - Torre Urquiza 4750</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -29,7 +29,7 @@
             overflow-x: hidden;
         }
 
-        /* 🏠 BOTÓN CASITA (Estética Blindada) */
+        /* 🏠 BOTÓN CASITA */
         .btn-home {
             position: fixed; top: 15px; left: 15px; z-index: 9999;
             background: rgba(37, 99, 235, 0.9); color: white;
@@ -43,10 +43,8 @@
             text-align: center; background: var(--card);
             border-bottom: 3px solid var(--primary);
             border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        /* LEYENDA SEGURIDAD VERDE FUERTE */
         #status-bar {
             color: var(--success);
             font-size: 11px; font-weight: 800;
@@ -54,7 +52,6 @@
             text-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
         }
 
-        /* CONTENEDOR DE BOTONES - CORREGIDO */
         .container {
             width: 95%; max-width: 450px;
             margin-top: 25px; display: grid;
@@ -70,16 +67,16 @@
             transition: all 0.2s ease;
             display: flex; flex-direction: column; align-items: center;
         }
-        .hub-card:active { transform: scale(0.95); background: #1a252c; border-color: var(--primary); }
+        .hub-card:active { transform: scale(0.95); background: #1a252c; }
         .hub-card i { font-size: 35px; margin-bottom: 12px; color: var(--primary); }
         .hub-card span { display: block; font-weight: bold; font-size: 13px; text-transform: uppercase; }
 
-        /* MODALES BLINDADOS */
+        /* MODALES */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
         .modal-content { 
             background: var(--card); padding: 35px 25px; border-radius: 24px; 
             width: 100%; max-width: 360px; text-align: center; 
-            border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(37, 99, 235, 0.2);
+            border: 1px solid var(--primary);
         }
         
         input { 
@@ -87,14 +84,9 @@
             border-radius: 12px; border: 1px solid var(--border); 
             background: #0b141a; color: white; font-size: 16px; outline: none;
         }
-        input:focus { border-color: var(--primary); }
         
-        .btn { 
-            padding: 15px; width: 100%; border-radius: 12px; 
-            border: none; font-weight: bold; cursor: pointer; 
-            font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-primary { background: var(--primary); color: white; margin-top: 15px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .btn { padding: 15px; width: 100%; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; text-transform: uppercase; }
+        .btn-primary { background: var(--primary); color: white; margin-top: 15px; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: #2a3942; color: #e9edef; }
 
@@ -105,7 +97,6 @@
             background: rgba(17, 27, 33, 0.95); color: var(--danger); font-weight: bold;
             padding: 16px; border-radius: 16px; border: 1px solid var(--danger); 
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            backdrop-filter: blur(10px);
         }
     </style>
 </head>
@@ -118,9 +109,7 @@
             <i class="fas fa-fingerprint" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
             <h2 style="margin-bottom: 5px;">Sistema Carga 87</h2>
             <p style="font-size: 12px; opacity: 0.5; margin-bottom: 25px;">CONTROL DE ACCESO RESTRINGIDO</p>
-            
             <input type="password" id="pass" placeholder="Clave de Seguridad" inputmode="numeric">
-            
             <button class="btn btn-primary" onclick="login()">VALIDAR ACCESO</button>
         </div>
     </div>
@@ -129,23 +118,24 @@
         <header>
             <div id="status-bar">● CONEXIÓN SEGURA - SEGURIDAD ACTIVA</div>
             <h1 style="font-size: 26px; letter-spacing: -1px;">HUB CENTRAL</h1>
-            <p style="font-size: 13px; opacity: 0.5;">Administración de Consorcio</p>
+            <p style="font-size: 13px; opacity: 0.7;">Administración de Consorcio</p>
+            <p style="font-size: 14px; color: var(--primary); font-weight: bold; margin-top: 5px;">Edificio Torre Urquiza 4750</p>
         </header>
 
         <div class="container">
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-Consorcios/salon/" class="hub-card">
+            <a href="salon/index.html" class="hub-card">
                 <i class="fas fa-calendar-check"></i>
                 <span>SALÓN SUM</span>
             </a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-Consorcios/cocheras/" class="hub-card">
+            <a href="cocheras/index.html" class="hub-card">
                 <i class="fas fa-car"></i>
                 <span>COCHERAS</span>
             </a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-Consorcios/reparaciones/" class="hub-card">
+            <a href="reparaciones/index.html" class="hub-card">
                 <i class="fas fa-tools"></i>
                 <span>REPARACIONES</span>
             </a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-Consorcios/gestionuf/" class="hub-card">
+            <a href="gestionuf/index.html" class="hub-card">
                 <i class="fas fa-users-cog"></i>
                 <span>GESTIÓN UF</span>
             </a>
@@ -161,9 +151,8 @@
             <div style="background: rgba(225, 29, 72, 0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
                 <i class="fas fa-sign-out-alt" style="font-size: 40px; color: var(--danger);"></i>
             </div>
-            <h3 style="font-size: 22px; margin-bottom: 10px;">Finalizar Sesión</h3>
-            <p style="margin-bottom: 30px; font-size: 15px; opacity: 0.8; line-height: 1.5;">¿Desea cerrar el sistema de gestión de forma segura?</p>
-            
+            <h3>Finalizar Sesión</h3>
+            <p style="margin: 15px 0 30px; font-size: 15px; opacity: 0.8;">¿Desea cerrar el sistema de gestión de forma segura?</p>
             <div style="display: flex; gap: 12px;">
                 <button class="btn btn-danger" style="flex: 1;" onclick="confirmarSalida()">SALIR</button>
                 <button class="btn btn-ghost" style="flex: 1;" onclick="cerrarCartelSalida()">VOLVER</button>
@@ -172,17 +161,14 @@
     </div>
 
     <script>
-        // Credencial Maestra: 1131552679
         const KEY = "1131552679";
 
         function login() {
-            const p = document.getElementById("pass").value;
-            if (p === KEY) {
+            if (document.getElementById("pass").value === KEY) {
                 localStorage.setItem("session_hub_2026", "active");
                 mostrarHub();
             } else {
                 alert("Clave Incorrecta");
-                document.getElementById("pass").value = "";
             }
         }
 
@@ -197,16 +183,7 @@
 
         function abrirCartelSalida() { document.getElementById("modal-logout").classList.remove("hidden"); }
         function cerrarCartelSalida() { document.getElementById("modal-logout").classList.add("hidden"); }
-        
-        function confirmarSalida() {
-            localStorage.removeItem("session_hub_2026");
-            location.reload();
-        }
-
-        // Bloquear Enter para login
-        document.getElementById("pass").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") login();
-        });
+        function confirmarSalida() { localStorage.removeItem("session_hub_2026"); location.reload(); }
     </script>
 </body>
 </html>
