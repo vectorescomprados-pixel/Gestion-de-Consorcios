@@ -13,10 +13,12 @@
             --success: #22c55e;
             --danger: #e11d48;
             --text: #e9edef;
+            --border: #2a3942;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
             color: var(--text);
@@ -29,75 +31,74 @@
         /* 🏠 BOTÓN CASITA */
         .btn-home {
             position: fixed; top: 15px; left: 15px; z-index: 9999;
-            background: rgba(37, 99, 235, 0.9); color: white; border: none;
-            border-radius: 50%; width: 45px; height: 45px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex;
-            align-items: center; justify-content: center; text-decoration: none;
+            background: rgba(37, 99, 235, 0.9); color: white;
+            border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         header {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            text-align: center;
-            background: var(--card);
-            border-bottom: 2px solid var(--primary);
+            width: 100%; max-width: 500px; padding: 25px 15px;
+            text-align: center; background: var(--card);
+            border-bottom: 3px solid var(--primary);
             border-radius: 0 0 20px 20px;
         }
 
-        /* LEYENDA SEGURIDAD VERDE */
         #status-bar {
             color: var(--success);
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 11px; font-weight: bold;
+            margin-bottom: 10px; letter-spacing: 1px;
         }
 
+        /* CONTENEDOR DE BOTONES */
         .container {
-            width: 90%;
-            max-width: 500px;
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding-bottom: 100px;
+            width: 95%; max-width: 450px;
+            margin-top: 25px; display: grid;
+            grid-template-columns: 1fr 1fr; gap: 15px;
+            padding-bottom: 120px;
         }
 
         .hub-card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            text-decoration: none;
-            color: white;
-            border: 1px solid #222d34;
-            transition: 0.3s;
+            background: var(--card); padding: 25px 10px;
+            border-radius: 15px; text-align: center;
+            text-decoration: none; color: white;
+            border: 1px solid var(--border);
+            transition: 0.2s;
         }
-
         .hub-card:active { transform: scale(0.95); background: #1a252c; }
+        .hub-card i { font-size: 32px; margin-bottom: 12px; color: var(--primary); }
+        .hub-card span { display: block; font-weight: bold; font-size: 13px; }
 
-        .hub-card i { font-size: 30px; margin-bottom: 10px; color: var(--primary); }
-        .hub-card span { display: block; font-weight: bold; font-size: 14px; }
-
-        /* MODAL Y LOGIN */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; border: 1px solid var(--primary); }
+        /* MODALES Y FORMULARIOS (CORREGIDO EL ANCHO) */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .modal-content { 
+            background: var(--card); padding: 30px; border-radius: 20px; 
+            width: 100%; max-width: 360px; text-align: center; 
+            border: 1px solid var(--primary);
+        }
         
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #2a3942; background: #1a252c; color: white; outline: none; }
+        input { 
+            width: 100%; padding: 12px 15px; margin: 10px 0; 
+            border-radius: 10px; border: 1px solid var(--border); 
+            background: #1a252c; color: white; font-size: 16px;
+        }
         
-        .btn { padding: 12px; width: 100%; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn { 
+            padding: 14px; width: 100%; border-radius: 10px; 
+            border: none; font-weight: bold; cursor: pointer; 
+            font-size: 14px; text-transform: uppercase;
+        }
+        .btn-primary { background: var(--primary); color: white; margin-top: 10px; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: #333; color: #ccc; }
 
         .hidden { display: none !important; }
 
         #btn-logout-main {
-            position: fixed; bottom: 20px; width: 90%; max-width: 450px;
-            background: var(--danger); color: white; font-weight: bold;
-            padding: 15px; border-radius: 12px; border: none; cursor: pointer;
+            position: fixed; bottom: 25px; width: 90%; max-width: 400px;
+            background: #1a252c; color: var(--danger); font-weight: bold;
+            padding: 16px; border-radius: 15px; border: 1px solid var(--danger); 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
     </style>
 </head>
@@ -107,67 +108,72 @@
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <i class="fas fa-shield-alt" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
-            <h2>Acceso al Hub</h2>
-            <input type="text" id="user" placeholder="Usuario (Admin/Operador)">
+            <i class="fas fa-user-shield" style="font-size: 45px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin-bottom: 10px;">Panel Administrativo</h2>
+            <p style="font-size: 12px; opacity: 0.6; margin-bottom: 20px;">Ingrese su clave de acceso</p>
+            
+            <input type="text" id="user" placeholder="Usuario">
             <input type="password" id="pass" placeholder="Contraseña">
-            <button class="btn btn-primary" onclick="login()">INGRESAR AL PANEL</button>
+            
+            <button class="btn btn-primary" onclick="login()">ENTRAR</button>
         </div>
     </div>
 
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
-            <div id="status-bar">● SISTEMA CONECTADO - SEGURIDAD ACTIVA</div>
-            <h1>HUB CENTRAL</h1>
-            <p style="font-size: 12px; opacity: 0.6;">Gestión Integral de Consorcios</p>
+            <div id="status-bar">● SISTEMA PROTEGIDO - SEGURIDAD ACTIVA</div>
+            <h1 style="font-size: 24px;">HUB CENTRAL</h1>
+            <p style="font-size: 13px; opacity: 0.5;">Consorcio CARGA 87</p>
         </header>
 
         <div class="container">
-            <a href="https://tu-url-salon.github.io" class="hub-card">
-                <i class="fas fa-calendar-alt"></i>
+            <a href="URL_DE_TU_APP_SALON" class="hub-card">
+                <i class="fas fa-calendar-check"></i>
                 <span>GESTIÓN SUM</span>
             </a>
-            <a href="https://tu-url-cocheras.github.io" class="hub-card">
-                <i class="fas fa-car"></i>
+            <a href="URL_DE_TU_APP_COCHERA" class="hub-card">
+                <i class="fas fa-car-side"></i>
                 <span>COCHERAS</span>
             </a>
-            <a href="https://tu-url-reparaciones.github.io" class="hub-card">
+            <a href="URL_DE_TU_APP_REPARACIONES" class="hub-card">
                 <i class="fas fa-tools"></i>
                 <span>REPARACIONES</span>
             </a>
-            <a href="https://tu-url-unidades.github.io" class="hub-card">
-                <i class="fas fa-building"></i>
+            <a href="URL_DE_TU_APP_UNIDADES" class="hub-card">
+                <i class="fas fa-id-card"></i>
                 <span>GESTIÓN UF</span>
             </a>
         </div>
 
-        <button id="btn-logout-main" onclick="abrirCartelSalida()">CERRAR SESIÓN SEGURA</button>
+        <button id="btn-logout-main" onclick="abrirCartelSalida()">
+            <i class="fas fa-power-off"></i> CERRAR SESIÓN SEGURA
+        </button>
     </div>
 
     <div id="modal-logout" class="modal hidden">
         <div class="modal-content">
             <i class="fas fa-sign-out-alt" style="font-size: 50px; color: var(--danger); margin-bottom: 15px;"></i>
-            <h3 style="font-size: 20px;">Finalizar Sesión</h3>
-            <p style="margin: 15px 0; font-size: 14px; opacity: 0.8;">¿Desea cerrar el sistema de gestión de forma segura?</p>
+            <h3 style="font-size: 22px; margin-bottom: 10px;">Finalizar Sesión</h3>
+            <p style="margin-bottom: 25px; font-size: 15px; opacity: 0.8; line-height: 1.4;">¿Desea cerrar el sistema de gestión de forma segura?</p>
             
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-danger" onclick="confirmarSalida()">SALIR</button>
-                <button class="btn btn-ghost" onclick="cerrarCartelSalida()">CANCELAR</button>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-danger" style="flex: 1;" onclick="confirmarSalida()">SALIR</button>
+                <button class="btn btn-ghost" style="flex: 1;" onclick="cerrarCartelSalida()">VOLVER</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Tu clave guardada: 1131552679
-        const MASTER_KEY = "1131552679";
+        // Credenciales: Cualquier usuario + Contraseña: 1131552679
+        const MASTER_PASS = "1131552679";
 
         function login() {
             const p = document.getElementById("pass").value;
-            if (p === MASTER_KEY) {
-                localStorage.setItem("hub_auth", "true");
+            if (p === MASTER_PASS) {
+                localStorage.setItem("hub_session", "active");
                 mostrarHub();
             } else {
-                alert("Clave administrativa incorrecta");
+                alert("Clave de seguridad incorrecta");
             }
         }
 
@@ -176,22 +182,15 @@
             document.getElementById("main-hub").classList.remove("hidden");
         }
 
-        // Al cargar, verificar si ya estaba logueado
-        if (localStorage.getItem("hub_auth") === "true") {
+        if (localStorage.getItem("hub_session") === "active") {
             mostrarHub();
         }
 
-        // Lógica del cartel de salida
-        function abrirCartelSalida() {
-            document.getElementById("modal-logout").classList.remove("hidden");
-        }
-
-        function cerrarCartelSalida() {
-            document.getElementById("modal-logout").classList.add("hidden");
-        }
-
+        function abrirCartelSalida() { document.getElementById("modal-logout").classList.remove("hidden"); }
+        function cerrarCartelSalida() { document.getElementById("modal-logout").classList.add("hidden"); }
+        
         function confirmarSalida() {
-            localStorage.removeItem("hub_auth");
+            localStorage.removeItem("hub_session");
             location.reload();
         }
     </script>
