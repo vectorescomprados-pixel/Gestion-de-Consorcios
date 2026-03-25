@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consorcio Hub</title>
+    <title>Consorcio Hub - Administrador</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <style>
         :root {
-            --bg-dark: #0b0f19; /* Fondo profundo de tus capturas */
-            --card-bg: #1a1f2b; /* Fondo de tarjetas */
+            --bg-dark: #0b0f19;
+            --card-bg: #1a1f2b;
             --primary-blue: #2563eb;
             --status-orange: #f59e0b;
             --status-red: #dc2626;
@@ -18,26 +22,30 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-white);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* Header Estilo App Nativa */
+        /* Header similar a tus capturas */
         .header {
             background-color: var(--primary-blue);
-            padding: 15px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.8rem;
             font-weight: bold;
-            font-size: 0.9rem;
+            letter-spacing: 0.5px;
         }
 
-        /* Buscador similar a la Captura 3 */
         .search-container {
             padding: 15px;
         }
+
         .search-bar {
             background-color: #111827;
             border: 1px solid #374151;
@@ -46,54 +54,55 @@
             color: white;
             width: 100%;
             box-sizing: border-box;
+            outline: none;
         }
 
-        /* Grid de Botones Lanzadores */
+        /* Grid de Botones (Acceso a tus otras Apps) */
         .app-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            padding: 15px;
+            padding: 0 15px 15px 15px;
         }
 
         .btn-app {
             border: none;
             border-radius: 8px;
-            padding: 20px 10px;
+            padding: 25px 10px;
             color: white;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
-            transition: transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        .btn-app:active { transform: scale(0.95); }
+        .btn-app:active { transform: scale(0.98); }
         .blue { background-color: var(--primary-blue); }
         .orange { background-color: var(--status-orange); }
         .grey { background-color: var(--status-grey); }
         .red { background-color: var(--status-red); }
 
-        /* Muro de Avisos / Estado Global */
+        /* Muro de Avisos / Tarjetas de Resumen */
         .section-title {
             padding: 10px 15px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #9ca3af;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: bold;
         }
 
         .card {
             background-color: var(--card-bg);
             margin: 0 15px 10px 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
-            align-items: center;
-            overflow: hidden; /* Para el borde lateral */
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* El borde lateral de color de tus capturas */
+        /* El borde lateral de color que pediste */
         .card::before {
             content: '';
             width: 6px;
@@ -103,35 +112,39 @@
         }
 
         .card-content {
-            padding: 15px 15px 15px 20px;
-            flex-grow: 1;
+            padding: 15px 15px 15px 22px;
         }
 
+        .card-title { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 2px; }
         .card-info { font-size: 0.8rem; color: #9ca3af; }
-        .card-title { font-weight: bold; margin-bottom: 4px; display: block; }
 
-        /* Colores de las tarjetas */
         .border-orange::before { background-color: var(--status-orange); }
         .border-blue::before { background-color: var(--primary-blue); }
         .border-red::before { background-color: var(--status-red); }
 
-        /* Botón de Salir inferior (Como en tu Captura 1) */
-        .btn-exit {
+        .footer-action {
+            margin-top: auto;
+            padding: 20px 15px;
+        }
+
+        .btn-logout {
             background-color: var(--status-red);
-            margin: 20px 15px;
-            padding: 12px;
-            border-radius: 8px;
+            color: white;
             text-align: center;
+            padding: 15px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span>EN LÍNEA - SEGURIDAD ACTIVA</span>
-        <span>47% 🔋</span>
+        <span>● EN LÍNEA - SEGURIDAD ACTIVA</span>
+        <span id="reloj">21:00</span>
     </div>
 
     <div class="search-container">
@@ -139,54 +152,94 @@
     </div>
 
     <div class="app-grid">
-        <button class="btn-app blue" onclick="abrirApp('unidades')">Gestión<br>Unidades</button>
-        <button class="btn-app orange" onclick="abrirApp('reparaciones')">Reparaciones</button>
-        <button class="btn-app grey" onclick="abrirApp('cocheras')">Cocheras</button>
-        <button class="btn-app red" onclick="abrirApp('salon')">Eventos / SUM</button>
+        <button class="btn-app blue" onclick="abrirApp('gestion_uf')">Gestionar<br>Unidades</button>
+        <button class="btn-app orange" onclick="abrirApp('reparaciones')">Reparaciones<br>Activas</button>
+        <button class="btn-app grey" onclick="abrirApp('cocheras')">Control<br>Cocheras</button>
+        <button class="btn-app red" onclick="abrirApp('salon')">Reserva<br>SUM / Salón</button>
     </div>
 
-    <div class="section-title">Muro de Avisos / Estado</div>
+    <div class="section-title">Estado del Consorcio</div>
 
     <div class="card border-orange">
         <div class="card-content">
-            <span class="card-title">Mantenimiento Urgente</span>
-            <span class="card-info">Ascensor B fuera de servicio hasta las 18hs.</span>
+            <span class="card-title">Reparaciones</span>
+            <span class="card-info" id="fb-reparaciones">Cargando...</span>
         </div>
     </div>
 
     <div class="card border-blue">
         <div class="card-content">
-            <span class="card-title">Reserva Salón</span>
-            <span class="card-info">Hoy: UF 0005 - Cumpleaños (20:00)</span>
+            <span class="card-title">Próximo Evento</span>
+            <span class="card-info" id="fb-evento">Cargando...</span>
         </div>
     </div>
 
     <div class="card border-red">
         <div class="card-content">
-            <span class="card-title">Cocheras</span>
-            <span class="card-info">Quedan 3 lugares disponibles para visitantes.</span>
+            <span class="card-title">Disponibilidad Cocheras</span>
+            <span class="card-info" id="fb-cocheras">Cargando...</span>
         </div>
     </div>
 
-    <div class="btn-exit" onclick="confirmarSalida()">BORRAR TODA LA NUBE / LOGOUT</div>
+    <div class="footer-action">
+        <div class="btn-logout" onclick="cerrarSesion()">FINALIZAR SESIÓN</div>
+    </div>
 
     <script>
-        function abrirApp(destino) {
-            // Aquí pones las URLs de tus otras Web Apps
-            const urls = {
-                'unidades': 'unidades.html',
-                'reparaciones': 'reparaciones.html',
-                'cocheras': 'cocheras.html',
-                'salon': 'salon.html'
-            };
-            window.location.href = urls[destino];
+        // 1. CONFIGURACIÓN DE TU FIREBASE (COPIALA DE TU CONSOLA)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "gestionuf-remoto", // Según tu captura
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. LÓGICA DE ACTUALIZACIÓN EN TIEMPO REAL
+        // Aquí leemos la colección 'resumen_consorcio' y el documento 'estado_actual'
+        db.collection("resumen_consorcio").doc("estado_actual")
+            .onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Actualizamos los textos con los campos int64 y string
+                    document.getElementById("fb-reparaciones").innerText = 
+                        (data.reparaciones_activas || 0) + " pendientes de revisión";
+                    
+                    document.getElementById("fb-evento").innerText = 
+                        data.proximo_evento || "Sin reservas hoy";
+                    
+                    document.getElementById("fb-cocheras").innerText = 
+                        (data.cocheras_libres || 0) + " lugares libres para visitas";
+                } else {
+                    console.log("El documento no existe. Verificá el ID en Firebase.");
+                }
+            });
+
+        // 3. NAVEGACIÓN
+        function abrirApp(pagina) {
+            // Esto asume que tus otros archivos están en la misma carpeta
+            // Ejemplo: gestion_uf.html, reparaciones.html, etc.
+            window.location.href = pagina + ".html";
         }
 
-        function confirmarSalida() {
+        function cerrarSesion() {
             if(confirm("¿Desea cerrar el sistema de gestión de forma segura?")) {
-                console.log("Sesión finalizada");
+                // Aquí podrías limpiar algún login si usas Auth
+                alert("Sesión cerrada");
             }
         }
+
+        // Reloj simple para la barra superior
+        setInterval(() => {
+            const ahora = new Date();
+            document.getElementById('reloj').innerText = ahora.getHours() + ":" + ahora.getMinutes().toString().padStart(2, '0');
+        }, 1000);
     </script>
 </body>
 </html>
