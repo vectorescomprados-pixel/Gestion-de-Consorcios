@@ -35,6 +35,7 @@
 
         #status-bar { color: var(--success); font-size: 11px; font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
 
+        /* 📊 CONSOLA DE ESTADOS */
         .console-container {
             width: 95%; max-width: 450px; margin-top: 15px;
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
@@ -77,8 +78,10 @@
             background: rgba(17, 27, 33, 0.95); color: var(--danger); font-weight: bold;
             padding: 16px; border-radius: 16px; border: 1px solid var(--danger);
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            backdrop-filter: blur(10px);
         }
         .hidden { display: none !important; }
+
         @keyframes blink { 50% { opacity: 0.5; } }
         .blink { animation: blink 1s linear infinite; }
     </style>
@@ -153,29 +156,27 @@
         const db = getFirestore(app);
 
         const KEY = "1131552679";
+        let unsubscribers = [];
 
-        window.login = () => {
-            if (document.getElementById("pass").value === KEY) {
-                localStorage.setItem("session_hub_2026", "active");
-                location.reload();
-            } else { alert("Clave Incorrecta"); }
-        };
-
-        // Función principal de carga de datos
         function conectarFirebase() {
             if (localStorage.getItem("session_hub_2026") !== "active") return;
             
+            // Limpiar suscripciones previas para evitar duplicados al volver
+            unsubscribers.forEach(unsub => unsub());
+            unsubscribers = [];
+
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
 
-            // Cocheras
-            onSnapshot(query(collection(db, "cocheras_edificio"), where("prop", "==", "S/D")), (snap) => {
+            // 1. Cocheras Disponibles
+            const u1 = onSnapshot(query(collection(db, "cocheras_edificio"), where("prop", "==", "S/D")), (snap) => {
                 document.getElementById("stat-cocheras").innerText = snap.size;
             });
+            unsubscribers.push(u1);
 
-            // SUM
+            // 2. SUM
             const hoy = new Date().toISOString().split('T');
-            onSnapshot(collection(db, "reservas_salon"), (snap) => {
+            const u2 = onSnapshot(collection(db, "reservas_salon"), (snap) => {
                 let res = "LIBRE"; let color = "var(--success)"; let b = false;
                 snap.forEach(doc => {
                     const r = doc.data();
@@ -186,9 +187,10 @@
                 el.innerText = res; el.style.color = color;
                 if(b) el.classList.add("blink"); else el.classList.remove("blink");
             });
+            unsubscribers.push(u2);
 
-            // Reparaciones
-            onSnapshot(collection(db, "reparaciones"), (snap) => {
+            // 3. Reparaciones (Pendiente + En Proceso)
+            const u3 = onSnapshot(collection(db, "reparaciones"), (snap) => {
                 let count = 0;
                 snap.forEach(doc => {
                     const est = doc.data().estado;
@@ -198,25 +200,30 @@
                 el.innerText = count;
                 el.style.color = count > 0 ? "var(--warning)" : "var(--success)";
             });
+            unsubscribers.push(u3);
         }
 
-        // --- SOLUCIÓN AL BOTÓN "CASITA" ---
-        // Se ejecuta al cargar por primera vez
-        conectarFirebase();
-
-        // Se ejecuta CADA VEZ que vuelves a la pestaña (cuando regresas de una app)
-        window.onpageshow = function(event) {
-            if (event.persisted) {
-                window.location.reload(); // Forza recarga total si viene de la caché
-            }
+        // CONTROL DE LOGIN
+        window.login = () => {
+            if (document.getElementById("pass").value === KEY) {
+                localStorage.setItem("session_hub_2026", "active");
+                location.reload();
+            } else { alert("Clave Incorrecta"); }
         };
 
-        // Por si acaso, detecta cambio de visibilidad
-        document.addEventListener("visibilitychange", function() {
-            if (document.visibilityState === 'visible') {
-                conectarFirebase(); // Re-vincula los listeners de Firebase
-            }
+        // --- SOLUCIÓN DE ACTUALIZACIÓN ---
+        conectarFirebase();
+
+        // Cuando la ventana gana el foco (vuelves de la app externa)
+        window.addEventListener('focus', () => {
+            console.log("Foco recuperado: refrescando consola...");
+            conectarFirebase();
         });
+
+        // Forzar recarga total si se detecta que viene de la caché del navegador
+        window.onpageshow = function(event) {
+            if (event.persisted) { window.location.reload(); }
+        };
 
         window.abrirCartelSalida = () => document.getElementById("modal-logout").classList.remove("hidden");
         window.cerrarCartelSalida = () => document.getElementById("modal-logout").classList.add("hidden");
