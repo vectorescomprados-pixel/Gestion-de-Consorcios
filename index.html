@@ -35,7 +35,7 @@
 
         #status-bar { color: var(--success); font-size: 11px; font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
 
-        /* 📊 CONSOLA DE ESTADOS (Recuperada) */
+        /* 📊 CONSOLA DE ESTADOS */
         .console-container {
             width: 95%; max-width: 450px; margin-top: 15px;
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
@@ -45,7 +45,7 @@
             padding: 12px 5px; border-radius: 15px; text-align: center;
         }
         .console-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
-        .console-item b { font-size: 18px; display: block; color: var(--text); }
+        .console-item b { font-size: 16px; display: block; color: var(--text); }
         .console-item span { font-size: 9px; text-transform: uppercase; font-weight: bold; opacity: 0.6; }
 
         .container {
@@ -79,18 +79,17 @@
             background: rgba(17, 27, 33, 0.95); color: var(--danger); font-weight: bold;
             padding: 16px; border-radius: 16px; border: 1px solid var(--danger);
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            backdrop-filter: blur(10px);
         }
         .hidden { display: none !important; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        .blink { animation: blink 1s linear infinite; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <div style="margin-bottom: 20px;">
-                <img src="icono.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 20%;">
-            </div>
+            <img src="icono.png" style="width: 70px; margin-bottom: 15px; border-radius: 15px;">
             <h2 style="margin-bottom: 5px;">Sistema Carga 87</h2>
             <p style="font-size: 12px; opacity: 0.5; margin-bottom: 25px;">TORRE URQUIZA 4750</p>
             <input type="password" id="pass" placeholder="Clave Maestra" inputmode="numeric">
@@ -100,9 +99,9 @@
 
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
-            <div id="status-bar">● CONEXIÓN SEGURA - SEGURIDAD ACTIVA</div>
+            <div id="status-bar">● CONEXIÓN SEGURA ACTIVA</div>
             <h1 style="font-size: 24px;">HUB CENTRAL</h1>
-            <p style="font-size: 14px; color: var(--primary); font-weight: bold;">Edificio Torre Urquiza 4750</p>
+            <p style="font-size: 14px; color: var(--primary); font-weight: bold;">Torre Urquiza 4750</p>
         </header>
 
         <div class="console-container">
@@ -113,48 +112,34 @@
             </div>
             <div class="console-item">
                 <i class="fas fa-calendar-day"></i>
-                <b id="stat-sum">--</b>
+                <b id="stat-sum">LIBRE</b>
                 <span>Reserva SUM</span>
             </div>
             <div class="console-item">
                 <i class="fas fa-tools"></i>
-                <b id="stat-obras" style="color: var(--warning);">0</b>
-                <span>Reparaciones</span>
+                <b id="stat-obras">0</b>
+                <span>Obras/Repar.</span>
             </div>
         </div>
 
         <div class="container">
-            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card">
-                <i class="fas fa-calendar-check"></i>
-                <span>SALÓN SUM</span>
-            </a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card">
-                <i class="fas fa-car"></i>
-                <span>COCHERAS</span>
-            </a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card">
-                <i class="fas fa-tools"></i>
-                <span>REPARACIONES</span>
-            </a>
-            <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card">
-                <i class="fas fa-users-cog"></i>
-                <span>GESTIÓN UF</span>
-            </a>
+            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-check"></i><span>SALÓN SUM</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-car"></i><span>COCHERAS</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-tools"></i><span>REPARACIONES</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>GESTIÓN UF</span></a>
         </div>
 
         <button id="btn-logout-main" onclick="abrirCartelSalida()">
-            <i class="fas fa-power-off"></i> FINALIZAR SESIÓN SEGURA
+            <i class="fas fa-power-off"></i> FINALIZAR SESIÓN
         </button>
     </div>
 
     <div id="modal-logout" class="modal hidden">
         <div class="modal-content">
-            <div style="background: rgba(225, 29, 72, 0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                <i class="fas fa-sign-out-alt" style="font-size: 40px; color: var(--danger);"></i>
-            </div>
-            <h3>Finalizar Sesión</h3>
-            <p style="margin: 15px 0 30px; font-size: 15px; opacity: 0.8;">¿Desea cerrar el sistema de forma segura?</p>
-            <div style="display: flex; gap: 12px;">
+            <i class="fas fa-sign-out-alt" style="font-size: 40px; color: var(--danger); margin-bottom: 20px;"></i>
+            <h3>Cerrar Sesión</h3>
+            <p style="margin: 15px 0 30px; opacity: 0.8;">¿Desea salir del sistema?</p>
+            <div style="display: flex; gap: 10px;">
                 <button class="btn btn-danger" style="flex: 1;" onclick="confirmarSalida()">SALIR</button>
                 <button class="btn btn-ghost" style="flex: 1;" onclick="cerrarCartelSalida()">VOLVER</button>
             </div>
@@ -182,18 +167,35 @@
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
             
-            // Lógica Consola Firebase
+            // 1. COCHERAS: Busca todas las que NO tengan propietario asignado (S/D)
             onSnapshot(query(collection(db, "cocheras_edificio"), where("prop", "==", "S/D")), (snap) => {
                 document.getElementById("stat-cocheras").innerText = snap.size;
             });
 
+            // 2. SUM: Detecta reservas para hoy y específicas (como la del 26/03)
             const hoy = new Date().toISOString().split('T');
-            onSnapshot(query(collection(db, "reservas_salon"), where("fecha", "==", hoy)), (snap) => {
-                document.getElementById("stat-sum").innerText = snap.size > 0 ? "OCUPADO" : "LIBRE";
+            onSnapshot(collection(db, "reservas_salon"), (snap) => {
+                let res = "LIBRE"; let color = "var(--success)"; let b = false;
+                snap.forEach(doc => {
+                    const r = doc.data();
+                    if(r.fecha === hoy) { res = "OCUPADO"; color = "var(--danger)"; }
+                    else if(r.fecha === "2026-03-26") { res = "MAÑANA"; color = "var(--warning)"; b = true; }
+                });
+                const el = document.getElementById("stat-sum");
+                el.innerText = res; el.style.color = color;
+                if(b) el.classList.add("blink"); else el.classList.remove("blink");
             });
 
-            onSnapshot(query(collection(db, "reparaciones"), where("estado", "==", "Pendiente")), (snap) => {
-                document.getElementById("stat-obras").innerText = snap.size;
+            // 3. REPARACIONES: Suma Pendientes + En Proceso
+            onSnapshot(collection(db, "reparaciones"), (snap) => {
+                let count = 0;
+                snap.forEach(doc => {
+                    const est = doc.data().estado;
+                    if(est === "Pendiente" || est === "En Proceso") count++;
+                });
+                const el = document.getElementById("stat-obras");
+                el.innerText = count;
+                el.style.color = count > 0 ? "var(--warning)" : "var(--success)";
             });
         }
 
@@ -202,7 +204,7 @@
         window.confirmarSalida = () => { localStorage.removeItem("session_hub_2026"); location.reload(); };
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.log(e)); });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => {}); });
         }
     </script>
 </body>
