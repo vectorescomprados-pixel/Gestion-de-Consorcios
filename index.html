@@ -29,20 +29,12 @@
             overflow-x: hidden;
         }
 
-        /* 🏠 BOTÓN CASITA */
-        .btn-home {
-            position: fixed; top: 15px; left: 15px; z-index: 9999;
-            background: rgba(37, 99, 235, 0.9); color: white;
-            border-radius: 50%; width: 45px; height: 45px;
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
         header {
             width: 100%; max-width: 500px; padding: 25px 15px;
             text-align: center; background: var(--card);
             border-bottom: 3px solid var(--primary);
             border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         #status-bar {
@@ -69,7 +61,7 @@
         }
         .hub-card:active { transform: scale(0.95); background: #1a252c; }
         .hub-card i { font-size: 35px; margin-bottom: 12px; color: var(--primary); }
-        .hub-card span { display: block; font-weight: bold; font-size: 13px; text-transform: uppercase; }
+        .hub-card span { display: block; font-weight: bold; font-size: 12px; text-transform: uppercase; }
 
         /* MODALES */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
@@ -102,8 +94,6 @@
 </head>
 <body>
 
-    <a href="index.html" class="btn-home"><i class="fas fa-home"></i></a>
-
     <div id="login-screen" class="modal">
         <div class="modal-content">
             <i class="fas fa-fingerprint" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
@@ -117,25 +107,25 @@
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
             <div id="status-bar">● CONEXIÓN SEGURA - SEGURIDAD ACTIVA</div>
-            <h1 style="font-size: 26px; letter-spacing: -1px;">HUB CENTRAL</h1>
+            <h1 style="font-size: 24px; letter-spacing: -1px;">HUB CENTRAL</h1>
             <p style="font-size: 13px; opacity: 0.7;">Administración de Consorcio</p>
             <p style="font-size: 14px; color: var(--primary); font-weight: bold; margin-top: 5px;">Edificio Torre Urquiza 4750</p>
         </header>
 
         <div class="container">
-            <a href="salon/index.html" class="hub-card">
+            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card">
                 <i class="fas fa-calendar-check"></i>
                 <span>SALÓN SUM</span>
             </a>
-            <a href="cocheras/index.html" class="hub-card">
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card">
                 <i class="fas fa-car"></i>
                 <span>COCHERAS</span>
             </a>
-            <a href="reparaciones/index.html" class="hub-card">
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card">
                 <i class="fas fa-tools"></i>
                 <span>REPARACIONES</span>
             </a>
-            <a href="gestionuf/index.html" class="hub-card">
+            <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card">
                 <i class="fas fa-users-cog"></i>
                 <span>GESTIÓN UF</span>
             </a>
@@ -183,7 +173,14 @@
 
         function abrirCartelSalida() { document.getElementById("modal-logout").classList.remove("hidden"); }
         function cerrarCartelSalida() { document.getElementById("modal-logout").classList.add("hidden"); }
-        function confirmarSalida() { localStorage.removeItem("session_hub_2026"); location.reload(); }
+        function confirmarSalida() { 
+            localStorage.removeItem("session_hub_2026"); 
+            location.reload(); 
+        }
+
+        document.getElementById("pass").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") login();
+        });
     </script>
 </body>
 </html>
