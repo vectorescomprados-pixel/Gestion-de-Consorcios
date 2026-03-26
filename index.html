@@ -2,109 +2,216 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>HUB Urquiza 4750</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <title>HUB - Torre Urquiza 4750</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b141a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="icon" type="image/png" href="icono.png">
+    <link rel="apple-touch-icon" href="icono.png">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0b141a; --card: #111b21; --primary: #2563eb; --success: #22c55e; --danger: #e11d48; --text: #e9edef; --border: #2a3942; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        header { width: 100%; max-width: 500px; padding: 30px 15px; text-align: center; background: var(--card); border-bottom: 3px solid var(--primary); border-radius: 0 0 25px 25px; position: relative; }
-        .btn-sync { position: absolute; top: 25px; right: 20px; color: var(--primary); border: 1px solid var(--primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .console-container { width: 92%; max-width: 450px; margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .console-item { background: #16212a; border: 1px solid var(--border); padding: 15px 5px; border-radius: 15px; text-align: center; }
+        :root {
+            --bg: #0b141a; --card: #111b21; --primary: #2563eb;
+            --success: #22c55e; --danger: #e11d48; --text: #e9edef;
+            --border: #2a3942; --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+
+        header {
+            width: 100%; max-width: 500px; padding: 25px 15px;
+            text-align: center; background: var(--card);
+            border-bottom: 3px solid var(--primary);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        #status-bar { color: var(--success); font-size: 11px; font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+
+        .console-container {
+            width: 95%; max-width: 450px; margin-top: 15px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        }
+        .console-item {
+            background: rgba(37, 99, 235, 0.08); border: 1px solid var(--border);
+            padding: 12px 5px; border-radius: 15px; text-align: center;
+        }
         .console-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
-        .console-item b { font-size: 15px; display: block; }
-        .console-item span { font-size: 9px; text-transform: uppercase; opacity: 0.5; font-weight: bold; }
-        .container { width: 92%; max-width: 450px; margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 100px; }
-        .hub-card { background: var(--card); padding: 35px 15px; border-radius: 20px; text-align: center; text-decoration: none; color: white; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
-        .hub-card i { font-size: 32px; margin-bottom: 12px; color: var(--primary); }
-        .hub-card span { font-weight: 700; font-size: 12px; }
-        .modal { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 25px; width: 85%; max-width: 340px; text-align: center; border: 1px solid var(--primary); }
-        input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: 1px solid var(--border); background: #000; color: white; font-size: 22px; text-align: center; }
-        .btn-login { width: 100%; padding: 15px; border-radius: 12px; background: var(--primary); color: white; border: none; font-weight: bold; }
+        .console-item b { font-size: 14px; display: block; color: var(--text); }
+        .console-item span { font-size: 9px; text-transform: uppercase; font-weight: bold; opacity: 0.6; }
+
+        .container {
+            width: 95%; max-width: 450px; margin-top: 25px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            padding: 0 10px 120px 10px;
+        }
+
+        .hub-card {
+            background: var(--card); padding: 30px 10px; border-radius: 20px;
+            text-align: center; text-decoration: none; color: white;
+            border: 1px solid var(--border); transition: all 0.2s ease;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .hub-card:active { transform: scale(0.95); background: #1a252c; }
+        .hub-card i { font-size: 38px; margin-bottom: 12px; color: var(--primary); }
+        .hub-card span { font-weight: bold; font-size: 12px; text-transform: uppercase; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .modal-content { background: var(--card); padding: 35px 25px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; border: 1px solid var(--primary); }
+        
+        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: #0b141a; color: white; font-size: 18px; text-align: center; outline: none; }
+        .btn { padding: 16px; width: 100%; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-primary { background: var(--primary); color: white; margin-top: 15px; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-ghost { background: #2a3942; color: #e9edef; }
+
+        #btn-logout-main {
+            position: fixed; bottom: 30px; width: calc(100% - 40px); max-width: 400px;
+            background: rgba(17, 27, 33, 0.95); color: var(--danger); font-weight: bold;
+            padding: 16px; border-radius: 16px; border: 1px solid var(--danger);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            backdrop-filter: blur(10px);
+        }
         .hidden { display: none !important; }
-        #btn-logout { margin-bottom: 40px; color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; background: none; border: 1px solid var(--danger); padding: 10px 20px; border-radius: 10px; }
     </style>
 </head>
 <body>
+
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom:10px">SISTEMA HUB</h2>
-            <p style="font-size:12px; opacity:0.6">TORRE URQUIZA 4750</p>
+            <h2 style="margin-bottom: 5px;">SISTEMA HUB</h2>
+            <p style="font-size: 12px; opacity: 0.5; margin-bottom: 25px;">TORRE URQUIZA 4750</p>
             <input type="password" id="pass" placeholder="••••" inputmode="numeric">
-            <button class="btn-login" onclick="login()">INGRESAR</button>
+            <button class="btn btn-primary" onclick="login()">ENTRAR</button>
         </div>
     </div>
 
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
-            <div class="btn-sync" onclick="location.reload(true)"><i class="fas fa-sync-alt"></i></div>
-            <p style="color: var(--success); font-size: 10px; font-weight: bold;">● CONECTADO</p>
-            <h1 style="font-size: 20px; font-weight: 800;">URQUIZA 4750</h1>
+            <div id="status-bar">● CONEXIÓN SEGURA ACTIVA</div>
+            <h1 style="font-size: 24px;">HUB CENTRAL</h1>
+            <p style="font-size: 14px; color: var(--primary); font-weight: bold;">Torre Urquiza 4750</p>
         </header>
 
         <div class="console-container">
-            <div class="console-item"><i class="fas fa-car"></i><b id="stat-cocheras">--</b><span>Libres</span></div>
-            <div class="console-item"><i class="fas fa-calendar-alt"></i><b id="stat-sum">--</b><span>S.U.M.</span></div>
-            <div class="console-item"><i class="fas fa-tools"></i><b id="stat-obras">--</b><span>Obras</span></div>
+            <div class="console-item">
+                <i class="fas fa-car"></i>
+                <b id="stat-cocheras">--</b>
+                <span>Libres</span>
+            </div>
+            <div class="console-item">
+                <i class="fas fa-calendar-day"></i>
+                <b id="stat-sum">--</b>
+                <span>S.U.M.</span>
+            </div>
+            <div class="console-item">
+                <i class="fas fa-tools"></i>
+                <b id="stat-obras">--</b>
+                <span>Obras</span>
+            </div>
         </div>
 
         <div class="container">
             <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-check"></i><span>RESERVAS</span></a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-parking"></i><span>COCHERA</span></a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>OBRAS</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-car"></i><span>COCHERA</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-tools"></i><span>REPARACIONES</span></a>
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
         </div>
-        <button id="btn-logout" onclick="logout()">CERRAR SESIÓN</button>
+
+        <button id="btn-logout-main" onclick="abrirCartelSalida()">
+            <i class="fas fa-power-off"></i> CERRAR SESIÓN
+        </button>
+    </div>
+
+    <div id="modal-logout" class="modal hidden">
+        <div class="modal-content">
+            <h3>¿Cerrar Sesión?</h3>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-danger" style="flex: 1;" onclick="confirmarSalida()">SALIR</button>
+                <button class="btn btn-ghost" style="flex: 1;" onclick="cerrarCartelSalida()">VOLVER</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", authDomain: "gestionuf-remoto.firebaseapp.com", projectId: "gestionuf-remoto" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const VER = "force_v5_4750"; // Nueva llave para matar la caché anterior
+        const KEY = "4750"; 
+        let unsubscribers = [];
 
-        function cargar() {
-            onSnapshot(collection(db, "departamentos"), (s) => {
-                const l = s.docs.filter(d => parseInt(d.data().UF) <= 87 && (!d.data().Inquilino || d.data().Inquilino.trim() === "")).length;
-                document.getElementById("stat-cocheras").innerText = l;
+        function conectarFirebase() {
+            if (localStorage.getItem("session_hub_2026") !== "active") return;
+            
+            unsubscribers.forEach(unsub => unsub());
+            unsubscribers = [];
+
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("main-hub").classList.remove("hidden");
+
+            // 1. Cocheras Libres
+            const u1 = onSnapshot(collection(db, "departamentos"), (snap) => {
+                const libres = snap.docs.filter(d => {
+                    const data = d.data();
+                    return parseInt(data.UF) <= 87 && (!data.Inquilino || data.Inquilino.trim() === "");
+                }).length;
+                document.getElementById("stat-cocheras").innerText = libres;
             });
+            unsubscribers.push(u1);
 
-            const hoy = new Date().toISOString().split('T');
-            onSnapshot(collection(db, "reservas_salon"), (s) => {
-                const f = s.docs.map(d => d.data()).filter(r => r.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha));
+            // 2. Reserva SUM (Corregido)
+            const hoyStr = new Date().toISOString().split('T');
+            const qSum = query(collection(db, "reservas_salon"), where("fecha", ">=", hoyStr), orderBy("fecha", "asc"), limit(1));
+            
+            const u2 = onSnapshot(qSum, (snap) => {
                 const el = document.getElementById("stat-sum");
-                if (f.length > 0) {
-                    el.innerText = f.fecha === hoy ? "HOY" : f.fecha.split('-').reverse().slice(0,2).join('/');
-                    el.style.color = f.fecha === hoy ? "var(--danger)" : "#f59e0b";
-                } else { el.innerText = "S/R"; el.style.color = "var(--success)"; }
+                if (!snap.empty) {
+                    const data = snap.docs.data(); // Acceso correcto al primer documento
+                    el.innerText = data.fecha === hoyStr ? "HOY" : data.fecha.split('-').reverse().slice(0,2).join('/');
+                    el.style.color = data.fecha === hoyStr ? "var(--danger)" : "var(--warning)";
+                } else {
+                    el.innerText = "S/R";
+                    el.style.color = "var(--success)";
+                }
             });
+            unsubscribers.push(u2);
 
-            onSnapshot(collection(db, "reparaciones"), (s) => {
-                const p = s.docs.filter(d => d.data().estado === "Pendiente").length;
-                document.getElementById("stat-obras").innerText = p;
+            // 3. Reparaciones Pendientes
+            const u3 = onSnapshot(query(collection(db, "reparaciones"), where("estado", "==", "Pendiente")), (snap) => {
+                const count = snap.size;
+                const el = document.getElementById("stat-obras");
+                el.innerText = count;
+                el.style.color = count > 0 ? "var(--danger)" : "var(--success)";
             });
+            unsubscribers.push(u3);
         }
 
         window.login = () => {
-            if (document.getElementById("pass").value === "4750") {
-                localStorage.setItem(VER, "1");
-                location.reload();
-            } else { alert("Error"); }
+            if (document.getElementById("pass").value === KEY) {
+                localStorage.setItem("session_hub_2026", "active");
+                conectarFirebase();
+            } else { alert("Clave Incorrecta"); }
         };
 
-        window.logout = () => { localStorage.removeItem(VER); location.reload(); };
+        if (localStorage.getItem("session_hub_2026") === "active") conectarFirebase();
 
-        if (localStorage.getItem(VER)) {
-            document.getElementById("login-screen").classList.add("hidden");
-            document.getElementById("main-hub").classList.remove("hidden");
-            cargar();
+        window.abrirCartelSalida = () => document.getElementById("modal-logout").classList.remove("hidden");
+        window.cerrarCartelSalida = () => document.getElementById("modal-logout").classList.add("hidden");
+        window.confirmarSalida = () => { localStorage.removeItem("session_hub_2026"); location.reload(); };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => {}); });
         }
     </script>
 </body>
