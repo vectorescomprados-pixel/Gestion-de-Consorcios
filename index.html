@@ -25,15 +25,13 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        /* BOTÓN DE ACTUALIZACIÓN FORZADA */
         .btn-sync-hub {
             position: absolute; top: 25px; right: 20px;
             background: rgba(37, 99, 235, 0.15); color: var(--primary);
             border: 1px solid var(--primary); width: 45px; height: 45px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 100; transition: 0.3s;
+            cursor: pointer; z-index: 100;
         }
-        .btn-sync-hub:active { transform: rotate(180deg); }
 
         .console-container {
             width: 92%; max-width: 450px; margin-top: 20px;
@@ -57,9 +55,8 @@
             background: var(--card); padding: 35px 10px; border-radius: 25px;
             text-align: center; text-decoration: none; color: white;
             border: 1px solid var(--border); display: flex;
-            flex-direction: column; align-items: center; transition: 0.2s;
+            flex-direction: column; align-items: center;
         }
-        .hub-card:active { transform: scale(0.95); }
         .hub-card i { font-size: 35px; margin-bottom: 15px; color: var(--primary); }
         .hub-card span { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; }
 
@@ -77,9 +74,9 @@
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 10px;">SISTEMA HUB</h2>
+            <h2 style="margin-bottom: 10px;">ACCESO PRIVADO</h2>
             <input type="password" id="pass" placeholder="••••" inputmode="numeric">
-            <button class="btn-login" onclick="login()">INGRESAR</button>
+            <button class="btn-login" onclick="login()">ENTRAR</button>
         </div>
     </div>
 
@@ -99,7 +96,7 @@
         <div class="container">
             <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-alt"></i><span>RESERVAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-parking"></i><span>COCHERA</span></a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>REPARACIONES</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>OBRAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
         </div>
 
@@ -114,22 +111,21 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Función para normalizar cualquier formato de fecha a un número comparable (YYYYMMDD)
         function normalizarFecha(f) {
             if(!f) return 0;
             const nums = f.replace(/\D/g, ''); 
             if(f.includes('-') && f.split('-').length === 4) {
-                return parseInt(nums); // Ya es 20260327
+                return parseInt(nums); 
             } else {
                 const d = nums.substring(0,2);
                 const m = nums.substring(2,4);
                 const a = "20" + nums.substring(4,6);
-                return parseInt(a + m + d); // Convierte 280326 a 20260328
+                return parseInt(a + m + d);
             }
         }
 
         function conectar() {
-            // 1. Cocheras (Desde la colección departamentos)
+            // 1. Cocheras (Campos: UF e Inquilino con Mayúscula)
             onSnapshot(collection(db, "departamentos"), (snap) => {
                 const libres = snap.docs.filter(d => {
                     const data = d.data();
@@ -138,7 +134,7 @@
                 document.getElementById("stat-cocheras").innerText = libres;
             });
 
-            // 2. SUM (Lógica Multi-formato)
+            // 2. SUM (Campo: fecha con minúscula según tu foto de Firebase)
             const hoyObj = new Date();
             const hoyNum = parseInt(hoyObj.getFullYear() + String(hoyObj.getMonth() + 1).padStart(2, '0') + String(hoyObj.getDate()).padStart(2, '0'));
 
@@ -161,9 +157,13 @@
                         el.innerText = "HOY";
                         el.style.color = "var(--danger)";
                     } else {
-                        // Limpia para mostrar DD/MM
                         const f = proxFecha.replace(/\D/g, '');
-                        el.innerText = f.substring(0,2) + "/" + f.substring(2,4);
+                        // Si es AAAA-MM-DD extraemos los números correctos
+                        if(proxFecha.includes('-') && proxFecha.indexOf('-') === 4) {
+                           el.innerText = proxFecha.substring(8,10) + "/" + proxFecha.substring(5,7);
+                        } else {
+                           el.innerText = f.substring(0,2) + "/" + f.substring(2,4);
+                        }
                         el.style.color = "var(--warning)";
                     }
                 } else {
@@ -172,9 +172,12 @@
                 }
             });
 
-            // 3. Reparaciones
+            // 3. Reparaciones (Campo: estado con minúscula o Estado con Mayúscula)
             onSnapshot(collection(db, "reparaciones"), (snap) => {
-                const p = snap.docs.filter(d => d.data().estado === "Pendiente").length;
+                const p = snap.docs.filter(d => {
+                    const data = d.data();
+                    return (data.estado === "Pendiente" || data.Estado === "Pendiente");
+                }).length;
                 const el = document.getElementById("stat-obras");
                 el.innerText = p;
                 el.style.color = p > 0 ? "var(--danger)" : "var(--success)";
