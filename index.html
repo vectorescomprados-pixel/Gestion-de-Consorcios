@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
     <title>HUB - Gestión de Consorcios</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b141a">
+    
+    <link rel="apple-touch-icon" href="icono.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -26,14 +34,11 @@
         .hub-card { background: var(--card); padding: 30px 10px; border-radius: 25px; text-align: center; text-decoration: none; color: white; border: 1px solid var(--border); }
         .hub-card i { font-size: 30px; margin-bottom: 10px; color: var(--primary); display: block; }
         
-        /* BOTÓN INFERIOR */
         .logout-trigger { margin: 20px 0 50px 0; color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid var(--danger); padding: 12px 25px; border-radius: 15px; background: none; text-transform: uppercase; }
 
-        /* MODALES */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
         .modal-content { background: var(--card); padding: 30px; border-radius: 30px; width: 100%; max-width: 340px; text-align: center; border: 1px solid var(--primary); }
         
-        /* ESTILO DEL CARTEL DE SALIDA (FOTO) */
         .exit-card { background: var(--modal-bg); border-radius: 25px; padding: 30px 20px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #232d36; }
         .exit-icon { color: #ef4444; font-size: 45px; margin-bottom: 15px; }
         .exit-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff; }
@@ -94,6 +99,15 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Registro del Service Worker (Necesario para PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado correctamente'))
+                    .catch(err => console.error('Error al registrar Service Worker', err));
+            });
+        }
 
         const firebaseConfig = { apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", authDomain: "gestionuf-remoto.firebaseapp.com", projectId: "gestionuf-remoto" };
         const app = initializeApp(firebaseConfig);
@@ -167,7 +181,6 @@
             } else { alert("Clave Incorrecta"); }
         };
 
-        // FUNCIONES DE SALIDA
         window.abrirCartel = () => document.getElementById("logout-confirm").classList.remove("hidden");
         window.cerrarCartel = () => document.getElementById("logout-confirm").classList.add("hidden");
         window.confirmarSalida = () => {
