@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
     <title>HUB - Torre Urquiza 4750</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0b141a">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -23,15 +17,23 @@
         body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
         header {
-            width: 100%; max-width: 500px; padding: 30px 15px;
+            width: 100%; max-width: 500px; padding: 35px 15px;
             text-align: center; background: var(--card);
             border-bottom: 3px solid var(--primary);
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 25px 25px;
             position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        #status-tag { color: var(--success); font-size: 10px; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-sync-hub {
+            position: absolute; top: 25px; right: 20px;
+            background: rgba(37, 99, 235, 0.15); color: var(--primary);
+            border: 1px solid var(--primary); width: 45px; height: 45px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 100;
+        }
+
+        #status-tag { color: var(--success); font-size: 10px; font-weight: 800; margin-bottom: 5px; letter-spacing: 1px; }
 
         .console-container {
             width: 92%; max-width: 450px; margin-top: 20px;
@@ -47,7 +49,7 @@
 
         .container {
             width: 92%; max-width: 450px; margin-top: 25px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
             padding-bottom: 120px;
         }
 
@@ -55,48 +57,48 @@
             background: var(--card); padding: 35px 10px; border-radius: 25px;
             text-align: center; text-decoration: none; color: white;
             border: 1px solid var(--border); display: flex;
-            flex-direction: column; align-items: center; transition: 0.2s;
+            flex-direction: column; align-items: center;
         }
         .hub-card i { font-size: 35px; margin-bottom: 15px; color: var(--primary); }
         .hub-card span { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; }
-        .hub-card:active { transform: scale(0.95); background: #1a252c; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 25px; width: 85%; max-width: 340px; text-align: center; border: 1px solid var(--primary); }
+        .modal { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 30px; width: 85%; max-width: 340px; text-align: center; border: 1px solid var(--primary); }
         
-        input { width: 100%; padding: 16px; margin: 20px 0; border-radius: 12px; border: 1px solid var(--border); background: #000; color: white; font-size: 22px; text-align: center; outline: none; }
-        .btn-login { width: 100%; padding: 16px; border-radius: 12px; background: var(--primary); color: white; border: none; font-weight: bold; }
+        input { width: 100%; padding: 18px; margin: 20px 0; border-radius: 15px; border: 1px solid var(--border); background: #000; color: white; font-size: 24px; text-align: center; }
+        .btn-login { width: 100%; padding: 18px; border-radius: 15px; background: var(--primary); color: white; border: none; font-weight: bold; }
         
+        #btn-logout { margin-top: 30px; color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid var(--danger); padding: 12px 25px; border-radius: 15px; background: none; }
         .hidden { display: none !important; }
-        #btn-logout { margin-top: 30px; color: var(--danger); font-size: 13px; font-weight: bold; cursor: pointer; background: none; border: 1px solid var(--danger); padding: 10px 20px; border-radius: 12px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <h2 style="letter-spacing: 1px;">SISTEMA HUB</h2>
+            <h2 style="margin-bottom: 10px;">ACCESO PRIVADO</h2>
             <input type="password" id="pass" placeholder="••••" inputmode="numeric">
-            <button class="btn-login" onclick="login()">INGRESAR</button>
+            <button class="btn-login" onclick="login()">ENTRAR</button>
         </div>
     </div>
 
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
-            <div id="status-tag">● Conectado</div>
-            <h1 style="font-size: 22px; font-weight: 800;">URQUIZA 4750</h1>
+            <div class="btn-sync-hub" onclick="location.reload(true)"><i class="fas fa-sync-alt"></i></div>
+            <div id="status-tag">● SISTEMA EN LÍNEA</div>
+            <h1 style="font-size: 22px; font-weight: 900;">URQUIZA 4750</h1>
         </header>
 
         <div class="console-container">
             <div class="console-item"><i class="fas fa-car"></i><b id="stat-cocheras">--</b><span>Libres</span></div>
-            <div class="console-item"><i class="fas fa-calendar-alt"></i><b id="stat-sum">--</b><span>S.U.M.</span></div>
+            <div class="console-item"><i class="fas fa-calendar-check"></i><b id="stat-sum">--</b><span>S.U.M.</span></div>
             <div class="console-item"><i class="fas fa-tools"></i><b id="stat-obras">--</b><span>Obras</span></div>
         </div>
 
         <div class="container">
-            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-check"></i><span>RESERVAS</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-alt"></i><span>RESERVAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-parking"></i><span>COCHERA</span></a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>REPARACIONES</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>OBRAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
         </div>
 
@@ -105,40 +107,70 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", authDomain: "gestionuf-remoto.firebaseapp.com", projectId: "gestionuf-remoto" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        function iniciar() {
-            // 1. Cocheras
+        const SESSION_ID = "hub_session_vFinal";
+
+        // Función para convertir DD-MM-AA a un formato comparable AAAA-MM-DD
+        function normalizarFecha(f) {
+            if(!f || !f.includes('-')) return "0000-00-00";
+            const parts = f.split('-');
+            if(parts.length === 4) return f; // Ya está bien
+            return `20${parts}-${parts}-${parts}`; // Convierte 27-03-26 a 2026-03-27
+        }
+
+        function conectar() {
             onSnapshot(collection(db, "departamentos"), (snap) => {
-                const libres = snap.docs.filter(d => parseInt(d.data().UF) <= 87 && (!d.data().Inquilino || d.data().Inquilino.trim() === "")).length;
+                const libres = snap.docs.filter(d => {
+                    const res = d.data();
+                    return parseInt(res.UF) <= 87 && (!res.Inquilino || res.Inquilino.trim() === "");
+                }).length;
                 document.getElementById("stat-cocheras").innerText = libres;
             });
 
-            // 2. SUM (Lógica Local para evitar fallos de índice)
             const hoy = new Date().toISOString().split('T');
+            const hoyCorta = new Date().toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', year:'2-digit'}).replace(/\//g, '-');
+
             onSnapshot(collection(db, "reservas_salon"), (snap) => {
-                const data = snap.docs.map(d => d.data());
-                // Filtramos fechas futuras y ordenamos
-                const futuras = data.filter(r => r.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha));
+                const listado = [];
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    if(data.fecha) {
+                        listado.push({
+                            original: data.fecha,
+                            comparable: normalizarFecha(data.fecha)
+                        });
+                    }
+                });
                 
-                const el = document.getElementById("stat-sum");
-                if (futuras.length > 0) {
-                    const prox = futuras;
-                    el.innerText = prox.fecha === hoy ? "HOY" : prox.fecha.split('-').reverse().slice(0,2).join('/');
-                    el.style.color = prox.fecha === hoy ? "var(--danger)" : "var(--warning)";
+                const proximas = listado
+                    .filter(r => r.comparable >= hoy)
+                    .sort((a, b) => a.comparable.localeCompare(b.comparable));
+                
+                const display = document.getElementById("stat-sum");
+                if (proximas.length > 0) {
+                    const masCercana = proximas;
+                    if(masCercana.original === hoyCorta) {
+                        display.innerText = "HOY";
+                        display.style.color = "var(--danger)";
+                    } else {
+                        // Mostramos DD/MM
+                        const p = masCercana.original.split('-');
+                        display.innerText = `${p}/${p}`;
+                        display.style.color = "var(--warning)";
+                    }
                 } else {
-                    el.innerText = "S/R";
-                    el.style.color = "var(--success)";
+                    display.innerText = "S/R";
+                    display.style.color = "var(--success)";
                 }
             });
 
-            // 3. Reparaciones
-            onSnapshot(query(collection(db, "reparaciones"), where("estado", "==", "Pendiente")), (snap) => {
-                const p = snap.size;
+            onSnapshot(collection(db, "reparaciones"), (snap) => {
+                const p = snap.docs.filter(d => d.data().estado === "Pendiente").length;
                 const el = document.getElementById("stat-obras");
                 el.innerText = p;
                 el.style.color = p > 0 ? "var(--danger)" : "var(--success)";
@@ -147,17 +179,17 @@
 
         window.login = () => {
             if (document.getElementById("pass").value === "4750") {
-                localStorage.setItem("session_v6", "active");
+                localStorage.setItem(SESSION_ID, "true");
                 location.reload();
-            } else { alert("Error"); }
+            } else { alert("Clave Incorrecta"); }
         };
 
-        window.logout = () => { localStorage.removeItem("session_v6"); location.reload(); };
+        window.logout = () => { localStorage.removeItem(SESSION_ID); location.reload(); };
 
-        if (localStorage.getItem("session_v6") === "active") {
+        if (localStorage.getItem(SESSION_ID) === "true") {
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
-            iniciar();
+            conectar();
         }
     </script>
 </body>
