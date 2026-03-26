@@ -80,9 +80,6 @@
             backdrop-filter: blur(10px);
         }
         .hidden { display: none !important; }
-
-        @keyframes blink { 50% { opacity: 0.5; } }
-        .blink { animation: blink 1s linear infinite; }
     </style>
 </head>
 <body>
@@ -113,7 +110,7 @@
             <div class="console-item">
                 <i class="fas fa-calendar-day"></i>
                 <b id="stat-sum">--</b>
-                <span>Próxima Reserva</span>
+                <span>Próxima</span>
             </div>
             <div class="console-item">
                 <i class="fas fa-tools"></i>
@@ -150,31 +147,38 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", authDomain: "gestionuf-remoto.firebaseapp.com", projectId: "gestionuf-remoto" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", 
+            authDomain: "gestionuf-remoto.firebaseapp.com", 
+            projectId: "gestionuf-remoto" 
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const KEY = "4750"; // Clave actualizada
-        let unsubscribers = [];
+        const KEY = "4750";
+        let isConnected = false;
 
-        function conectarFirebase() {
-            if (localStorage.getItem("session_hub_2026") !== "active") return;
-            
-            unsubscribers.forEach(unsub => unsub());
-            unsubscribers = [];
+        function iniciarMonitoreo() {
+            if (isConnected) return; // Evita duplicar suscripciones si ya está activo
 
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
 
-            // 1. Cocheras Libres (Estado S/D)
-            const u1 = onSnapshot(query(collection(db, "cocheras_edificio"), where("prop", "==", "S/D")), (snap) => {
-                document.getElementById("stat-cocheras").innerText = snap.size;
+            // 1. Cocheras Libres: Se filtran las UFs entre 0 y 87 que no tienen Inquilino asignado
+            onSnapshot(collection(db, "departamentos"), (snap) => {
+                const cocherasLibres = snap.docs.filter(d => {
+                    const ufNum = parseInt(d.data().UF);
+                    const sinInquilino = !d.data().Inquilino || d.data().Inquilino.trim() === "";
+                    return ufNum >= 0 && ufNum <= 87 && sinInquilino;
+                });
+                document.getElementById("stat-cocheras").innerText = cocherasLibres.length;
             });
-            unsubscribers.push(u1);
 
-            // 2. Reserva SUM más próxima
+            // 2. Próxima Reserva SUM: Busca la fecha más cercana a partir de hoy
             const hoyStr = new Date().toISOString().split('T');
-            const u2 = onSnapshot(query(collection(db, "reservas_salon"), where("fecha", ">=", hoyStr), orderBy("fecha", "asc"), limit(1)), (snap) => {
+            const qSum = query(collection(db, "reservas_salon"), where("fecha", ">=", hoyStr), orderBy("fecha", "asc"), limit(1));
+            onSnapshot(qSum, (snap) => {
                 const el = document.getElementById("stat-sum");
                 if (!snap.empty) {
                     const data = snap.docs.data();
@@ -185,44 +189,44 @@
                     el.style.color = "var(--success)";
                 }
             });
-            unsubscribers.push(u2);
 
-            // 3. Reparaciones (Específicamente PENDIENTES)
-            const u3 = onSnapshot(query(collection(db, "reparaciones"), where("estado", "==", "Pendiente")), (snap) => {
-                const count = snap.size;
+            // 3. Reparaciones Pendientes
+            const qRep = query(collection(db, "reparaciones"), where("estado", "==", "Pendiente"));
+            onSnapshot(qRep, (snap) => {
                 const el = document.getElementById("stat-obras");
-                el.innerText = count;
-                el.style.color = count > 0 ? "var(--danger)" : "var(--success)";
+                el.innerText = snap.size;
+                el.style.color = snap.size > 0 ? "var(--danger)" : "var(--success)";
             });
-            unsubscribers.push(u3);
+
+            isConnected = true;
         }
 
         window.login = () => {
             if (document.getElementById("pass").value === KEY) {
                 localStorage.setItem("session_hub_2026", "active");
-                conectarFirebase(); // Carga inmediata tras login
+                iniciarMonitoreo();
             } else { alert("Clave Incorrecta"); }
         };
 
-        // Auto-conectar si ya hay sesión
+        // Reconexión automática al cargar o recuperar el foco del navegador
         if (localStorage.getItem("session_hub_2026") === "active") {
-            conectarFirebase();
+            iniciarMonitoreo();
         }
 
         window.addEventListener('focus', () => {
-            conectarFirebase();
+            if (localStorage.getItem("session_hub_2026") === "active") {
+                iniciarMonitoreo();
+            }
         });
-
-        window.onpageshow = function(event) {
-            if (event.persisted) { window.location.reload(); }
-        };
 
         window.abrirCartelSalida = () => document.getElementById("modal-logout").classList.remove("hidden");
         window.cerrarCartelSalida = () => document.getElementById("modal-logout").classList.add("hidden");
         window.confirmarSalida = () => { localStorage.removeItem("session_hub_2026"); location.reload(); };
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => {}); });
+            window.addEventListener('load', () => { 
+                navigator.serviceWorker.register('./sw.js').catch(e => {}); 
+            });
         }
     </script>
 </body>
