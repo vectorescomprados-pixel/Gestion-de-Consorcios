@@ -35,7 +35,6 @@
 
         #status-bar { color: var(--success); font-size: 11px; font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px; text-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
 
-        /* 📊 CONSOLA DE ESTADOS */
         .console-container {
             width: 95%; max-width: 450px; margin-top: 15px;
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
@@ -45,7 +44,7 @@
             padding: 12px 5px; border-radius: 15px; text-align: center;
         }
         .console-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
-        .console-item b { font-size: 16px; display: block; color: var(--text); }
+        .console-item b { font-size: 14px; display: block; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .console-item span { font-size: 9px; text-transform: uppercase; font-weight: bold; opacity: 0.6; }
 
         .container {
@@ -91,7 +90,7 @@
     <div id="login-screen" class="modal">
         <div class="modal-content">
             <img src="icono.png" style="width: 70px; margin-bottom: 15px; border-radius: 15px;">
-            <h2 style="margin-bottom: 5px;">Sistema Carga 87</h2>
+            <h2 style="margin-bottom: 5px;">Gestión de Consorcios</h2>
             <p style="font-size: 12px; opacity: 0.5; margin-bottom: 25px;">TORRE URQUIZA 4750</p>
             <input type="password" id="pass" placeholder="Clave Maestra" inputmode="numeric">
             <button class="btn btn-primary" onclick="login()">ENTRAR</button>
@@ -109,17 +108,17 @@
             <div class="console-item">
                 <i class="fas fa-car"></i>
                 <b id="stat-cocheras">--</b>
-                <span>Cocheras Libres</span>
+                <span>Libres</span>
             </div>
             <div class="console-item">
                 <i class="fas fa-calendar-day"></i>
                 <b id="stat-sum">--</b>
-                <span>Reserva SUM</span>
+                <span>Próxima Reserva</span>
             </div>
             <div class="console-item">
                 <i class="fas fa-tools"></i>
                 <b id="stat-obras">--</b>
-                <span>Obras/Repar.</span>
+                <span>Pendientes</span>
             </div>
         </div>
 
@@ -149,78 +148,71 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", authDomain: "gestionuf-remoto.firebaseapp.com", projectId: "gestionuf-remoto" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const KEY = "1131552679";
+        const KEY = "4750"; // Clave actualizada
         let unsubscribers = [];
 
         function conectarFirebase() {
             if (localStorage.getItem("session_hub_2026") !== "active") return;
             
-            // Limpiar suscripciones previas para evitar duplicados al volver
             unsubscribers.forEach(unsub => unsub());
             unsubscribers = [];
 
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
 
-            // 1. Cocheras Disponibles
+            // 1. Cocheras Libres (Estado S/D)
             const u1 = onSnapshot(query(collection(db, "cocheras_edificio"), where("prop", "==", "S/D")), (snap) => {
                 document.getElementById("stat-cocheras").innerText = snap.size;
             });
             unsubscribers.push(u1);
 
-            // 2. SUM
-            const hoy = new Date().toISOString().split('T');
-            const u2 = onSnapshot(collection(db, "reservas_salon"), (snap) => {
-                let res = "LIBRE"; let color = "var(--success)"; let b = false;
-                snap.forEach(doc => {
-                    const r = doc.data();
-                    if(r.fecha === hoy) { res = "OCUPADO"; color = "var(--danger)"; }
-                    else if(r.fecha === "2026-03-26") { res = "MAÑANA"; color = "var(--warning)"; b = true; }
-                });
+            // 2. Reserva SUM más próxima
+            const hoyStr = new Date().toISOString().split('T');
+            const u2 = onSnapshot(query(collection(db, "reservas_salon"), where("fecha", ">=", hoyStr), orderBy("fecha", "asc"), limit(1)), (snap) => {
                 const el = document.getElementById("stat-sum");
-                el.innerText = res; el.style.color = color;
-                if(b) el.classList.add("blink"); else el.classList.remove("blink");
+                if (!snap.empty) {
+                    const data = snap.docs.data();
+                    el.innerText = data.fecha === hoyStr ? "HOY" : data.fecha.split('-').reverse().slice(0,2).join('/');
+                    el.style.color = data.fecha === hoyStr ? "var(--danger)" : "var(--warning)";
+                } else {
+                    el.innerText = "S/R";
+                    el.style.color = "var(--success)";
+                }
             });
             unsubscribers.push(u2);
 
-            // 3. Reparaciones (Pendiente + En Proceso)
-            const u3 = onSnapshot(collection(db, "reparaciones"), (snap) => {
-                let count = 0;
-                snap.forEach(doc => {
-                    const est = doc.data().estado;
-                    if(est === "Pendiente" || est === "En Proceso") count++;
-                });
+            // 3. Reparaciones (Específicamente PENDIENTES)
+            const u3 = onSnapshot(query(collection(db, "reparaciones"), where("estado", "==", "Pendiente")), (snap) => {
+                const count = snap.size;
                 const el = document.getElementById("stat-obras");
                 el.innerText = count;
-                el.style.color = count > 0 ? "var(--warning)" : "var(--success)";
+                el.style.color = count > 0 ? "var(--danger)" : "var(--success)";
             });
             unsubscribers.push(u3);
         }
 
-        // CONTROL DE LOGIN
         window.login = () => {
             if (document.getElementById("pass").value === KEY) {
                 localStorage.setItem("session_hub_2026", "active");
-                location.reload();
+                conectarFirebase(); // Carga inmediata tras login
             } else { alert("Clave Incorrecta"); }
         };
 
-        // --- SOLUCIÓN DE ACTUALIZACIÓN ---
-        conectarFirebase();
+        // Auto-conectar si ya hay sesión
+        if (localStorage.getItem("session_hub_2026") === "active") {
+            conectarFirebase();
+        }
 
-        // Cuando la ventana gana el foco (vuelves de la app externa)
         window.addEventListener('focus', () => {
-            console.log("Foco recuperado: refrescando consola...");
             conectarFirebase();
         });
 
-        // Forzar recarga total si se detecta que viene de la caché del navegador
         window.onpageshow = function(event) {
             if (event.persisted) { window.location.reload(); }
         };
