@@ -25,15 +25,15 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
+        /* BOTÓN DE ACTUALIZACIÓN FORZADA */
         .btn-sync-hub {
             position: absolute; top: 25px; right: 20px;
             background: rgba(37, 99, 235, 0.15); color: var(--primary);
             border: 1px solid var(--primary); width: 45px; height: 45px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 100;
+            cursor: pointer; z-index: 100; transition: 0.3s;
         }
-
-        #status-tag { color: var(--success); font-size: 10px; font-weight: 800; margin-bottom: 5px; letter-spacing: 1px; }
+        .btn-sync-hub:active { transform: rotate(180deg); }
 
         .console-container {
             width: 92%; max-width: 450px; margin-top: 20px;
@@ -57,8 +57,9 @@
             background: var(--card); padding: 35px 10px; border-radius: 25px;
             text-align: center; text-decoration: none; color: white;
             border: 1px solid var(--border); display: flex;
-            flex-direction: column; align-items: center;
+            flex-direction: column; align-items: center; transition: 0.2s;
         }
+        .hub-card:active { transform: scale(0.95); }
         .hub-card i { font-size: 35px; margin-bottom: 15px; color: var(--primary); }
         .hub-card span { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; }
 
@@ -76,16 +77,16 @@
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 10px;">ACCESO PRIVADO</h2>
+            <h2 style="margin-bottom: 10px;">SISTEMA HUB</h2>
             <input type="password" id="pass" placeholder="••••" inputmode="numeric">
-            <button class="btn-login" onclick="login()">ENTRAR</button>
+            <button class="btn-login" onclick="login()">INGRESAR</button>
         </div>
     </div>
 
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
             <div class="btn-sync-hub" onclick="location.reload(true)"><i class="fas fa-sync-alt"></i></div>
-            <div id="status-tag">● SISTEMA EN LÍNEA</div>
+            <div style="color: var(--success); font-size: 10px; font-weight: 800;">● CONECTADO</div>
             <h1 style="font-size: 22px; font-weight: 900;">URQUIZA 4750</h1>
         </header>
 
@@ -98,7 +99,7 @@
         <div class="container">
             <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-alt"></i><span>RESERVAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-parking"></i><span>COCHERA</span></a>
-            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>OBRAS</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>REPARACIONES</span></a>
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
         </div>
 
@@ -113,62 +114,65 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const SESSION_ID = "hub_session_vFinal";
-
-        // Función para convertir DD-MM-AA a un formato comparable AAAA-MM-DD
+        // Función para normalizar cualquier formato de fecha a un número comparable (YYYYMMDD)
         function normalizarFecha(f) {
-            if(!f || !f.includes('-')) return "0000-00-00";
-            const parts = f.split('-');
-            if(parts.length === 4) return f; // Ya está bien
-            return `20${parts}-${parts}-${parts}`; // Convierte 27-03-26 a 2026-03-27
+            if(!f) return 0;
+            const nums = f.replace(/\D/g, ''); 
+            if(f.includes('-') && f.split('-').length === 4) {
+                return parseInt(nums); // Ya es 20260327
+            } else {
+                const d = nums.substring(0,2);
+                const m = nums.substring(2,4);
+                const a = "20" + nums.substring(4,6);
+                return parseInt(a + m + d); // Convierte 280326 a 20260328
+            }
         }
 
         function conectar() {
+            // 1. Cocheras (Desde la colección departamentos)
             onSnapshot(collection(db, "departamentos"), (snap) => {
                 const libres = snap.docs.filter(d => {
-                    const res = d.data();
-                    return parseInt(res.UF) <= 87 && (!res.Inquilino || res.Inquilino.trim() === "");
+                    const data = d.data();
+                    return parseInt(data.UF) <= 87 && (!data.Inquilino || data.Inquilino.trim() === "");
                 }).length;
                 document.getElementById("stat-cocheras").innerText = libres;
             });
 
-            const hoy = new Date().toISOString().split('T');
-            const hoyCorta = new Date().toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', year:'2-digit'}).replace(/\//g, '-');
+            // 2. SUM (Lógica Multi-formato)
+            const hoyObj = new Date();
+            const hoyNum = parseInt(hoyObj.getFullYear() + String(hoyObj.getMonth() + 1).padStart(2, '0') + String(hoyObj.getDate()).padStart(2, '0'));
 
             onSnapshot(collection(db, "reservas_salon"), (snap) => {
-                const listado = [];
+                let proxFecha = null;
+                let minVal = 99999999;
+
                 snap.forEach(doc => {
                     const data = doc.data();
-                    if(data.fecha) {
-                        listado.push({
-                            original: data.fecha,
-                            comparable: normalizarFecha(data.fecha)
-                        });
+                    const val = normalizarFecha(data.fecha);
+                    if (val >= hoyNum && val < minVal) {
+                        minVal = val;
+                        proxFecha = data.fecha;
                     }
                 });
-                
-                const proximas = listado
-                    .filter(r => r.comparable >= hoy)
-                    .sort((a, b) => a.comparable.localeCompare(b.comparable));
-                
-                const display = document.getElementById("stat-sum");
-                if (proximas.length > 0) {
-                    const masCercana = proximas;
-                    if(masCercana.original === hoyCorta) {
-                        display.innerText = "HOY";
-                        display.style.color = "var(--danger)";
+
+                const el = document.getElementById("stat-sum");
+                if (proxFecha) {
+                    if (minVal === hoyNum) {
+                        el.innerText = "HOY";
+                        el.style.color = "var(--danger)";
                     } else {
-                        // Mostramos DD/MM
-                        const p = masCercana.original.split('-');
-                        display.innerText = `${p}/${p}`;
-                        display.style.color = "var(--warning)";
+                        // Limpia para mostrar DD/MM
+                        const f = proxFecha.replace(/\D/g, '');
+                        el.innerText = f.substring(0,2) + "/" + f.substring(2,4);
+                        el.style.color = "var(--warning)";
                     }
                 } else {
-                    display.innerText = "S/R";
-                    display.style.color = "var(--success)";
+                    el.innerText = "S/R";
+                    el.style.color = "var(--success)";
                 }
             });
 
+            // 3. Reparaciones
             onSnapshot(collection(db, "reparaciones"), (snap) => {
                 const p = snap.docs.filter(d => d.data().estado === "Pendiente").length;
                 const el = document.getElementById("stat-obras");
@@ -179,14 +183,14 @@
 
         window.login = () => {
             if (document.getElementById("pass").value === "4750") {
-                localStorage.setItem(SESSION_ID, "true");
+                localStorage.setItem("session_hub_vFinal", "active");
                 location.reload();
             } else { alert("Clave Incorrecta"); }
         };
 
-        window.logout = () => { localStorage.removeItem(SESSION_ID); location.reload(); };
+        window.logout = () => { localStorage.removeItem("session_hub_vFinal"); location.reload(); };
 
-        if (localStorage.getItem(SESSION_ID) === "true") {
+        if (localStorage.getItem("session_hub_vFinal") === "active") {
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
             conectar();
