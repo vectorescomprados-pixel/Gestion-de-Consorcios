@@ -9,24 +9,40 @@
         :root {
             --bg: #0b141a; --card: #111b21; --primary: #2563eb;
             --success: #22c55e; --danger: #e11d48; --text: #e9edef;
-            --border: #2a3942; --warning: #f59e0b;
+            --border: #2a3942; --warning: #f59e0b; --modal-bg: #182229;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
         header { width: 100%; max-width: 500px; padding: 35px 15px; text-align: center; background: var(--card); border-bottom: 3px solid var(--primary); border-radius: 0 0 25px 25px; position: relative; }
         .btn-sync-hub { position: absolute; top: 25px; right: 20px; background: rgba(37, 99, 235, 0.15); color: var(--primary); border: 1px solid var(--primary); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
         .console-container { width: 92%; max-width: 450px; margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .console-item { background: rgba(37, 99, 235, 0.08); border: 1px solid var(--border); padding: 18px 5px; border-radius: 20px; text-align: center; }
         .console-item b { font-size: 16px; display: block; color: #fff; }
         .console-item span { font-size: 9px; text-transform: uppercase; opacity: 0.5; }
+        
         .container { width: 92%; max-width: 450px; margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding-bottom: 30px; }
         .hub-card { background: var(--card); padding: 30px 10px; border-radius: 25px; text-align: center; text-decoration: none; color: white; border: 1px solid var(--border); }
         .hub-card i { font-size: 30px; margin-bottom: 10px; color: var(--primary); display: block; }
         
-        #btn-logout { margin: 20px 0 50px 0; color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid var(--danger); padding: 12px 25px; border-radius: 15px; background: none; text-transform: uppercase; }
+        /* BOTÓN INFERIOR */
+        .logout-trigger { margin: 20px 0 50px 0; color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid var(--danger); padding: 12px 25px; border-radius: 15px; background: none; text-transform: uppercase; }
+
+        /* MODALES */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 30px; width: 100%; max-width: 340px; text-align: center; border: 1px solid var(--primary); }
         
-        .modal { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 30px; width: 85%; max-width: 340px; text-align: center; border: 1px solid var(--primary); }
+        /* ESTILO DEL CARTEL DE SALIDA (FOTO) */
+        .exit-card { background: var(--modal-bg); border-radius: 25px; padding: 30px 20px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #232d36; }
+        .exit-icon { color: #ef4444; font-size: 45px; margin-bottom: 15px; }
+        .exit-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff; }
+        .exit-text { font-size: 14px; color: #8696a0; margin-bottom: 25px; line-height: 1.4; }
+        .exit-buttons { display: flex; gap: 10px; }
+        .btn-exit { flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 13px; text-transform: uppercase; }
+        .btn-danger { background: #ea333f; color: white; }
+        .btn-cancel { background: #374151; color: #9ca3af; }
+
         input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px; border: 1px solid var(--border); background: #000; color: white; text-align: center; font-size: 20px; }
         .hidden { display: none !important; }
     </style>
@@ -35,8 +51,21 @@
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <h2>Gestión de Consorcios</h2> <input type="password" id="pass" placeholder="••••" inputmode="numeric">
+            <h2>Gestión de Consorcios</h2>
+            <input type="password" id="pass" placeholder="••••" inputmode="numeric">
             <button style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight: bold;" onclick="login()">ENTRAR</button>
+        </div>
+    </div>
+
+    <div id="logout-confirm" class="modal hidden">
+        <div class="exit-card">
+            <div class="exit-icon"><i class="fas fa-sign-out-alt"></i></div>
+            <div class="exit-title">Finalizar Sesión</div>
+            <div class="exit-text">¿Desea cerrar el sistema de gestión de forma segura?</div>
+            <div class="exit-buttons">
+                <button class="btn-exit btn-danger" onclick="confirmarSalida()">SALIR</button>
+                <button class="btn-exit btn-cancel" onclick="cerrarCartel()">CANCELAR</button>
+            </div>
         </div>
     </div>
 
@@ -59,7 +88,7 @@
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
         </div>
 
-        <button id="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        <button class="logout-trigger" onclick="abrirCartel()">Cerrar Sesión</button>
     </div>
 
     <script type="module">
@@ -138,7 +167,10 @@
             } else { alert("Clave Incorrecta"); }
         };
 
-        window.logout = () => {
+        // FUNCIONES DE SALIDA
+        window.abrirCartel = () => document.getElementById("logout-confirm").classList.remove("hidden");
+        window.cerrarCartel = () => document.getElementById("logout-confirm").classList.add("hidden");
+        window.confirmarSalida = () => {
             localStorage.removeItem("hub_ok");
             location.reload();
         };
