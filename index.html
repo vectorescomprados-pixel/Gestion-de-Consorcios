@@ -4,89 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
     <title>HUB Urquiza 4750</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0b141a">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --bg: #0b141a; --card: #111b21; --primary: #2563eb;
-            --success: #22c55e; --danger: #e11d48; --text: #e9edef;
-            --border: #2a3942; --warning: #f59e0b;
-        }
-
+        :root { --bg: #0b141a; --card: #111b21; --primary: #2563eb; --success: #22c55e; --danger: #e11d48; --text: #e9edef; --border: #2a3942; --warning: #f59e0b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
         /* HEADER ESTILO FOTO 1 */
-        header {
-            width: 100%; max-width: 500px; padding: 30px 15px;
-            text-align: center; background: var(--card);
-            border-bottom: 3px solid var(--primary);
-            border-radius: 0 0 25px 25px;
-            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        header { width: 100%; max-width: 500px; padding: 30px 15px; text-align: center; background: var(--card); border-bottom: 3px solid var(--primary); border-radius: 0 0 25px 25px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .btn-sync { position: absolute; top: 25px; right: 20px; background: rgba(37, 99, 235, 0.15); color: var(--primary); border: 1px solid var(--primary); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        .btn-sync {
-            position: absolute; top: 25px; right: 20px;
-            background: rgba(37, 99, 235, 0.15); color: var(--primary);
-            border: 1px solid var(--primary); width: 42px; height: 42px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 18px; z-index: 10;
-        }
-
-        /* CONSOLA DE ESTADOS */
-        .console-container {
-            width: 92%; max-width: 450px; margin-top: 20px;
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-        }
-        .console-item {
-            background: linear-gradient(145deg, #16212a, #111b21);
-            border: 1px solid var(--border); padding: 18px 5px;
-            border-radius: 20px; text-align: center;
-        }
+        /* CONSOLA */
+        .console-container { width: 92%; max-width: 450px; margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .console-item { background: #16212a; border: 1px solid var(--border); padding: 18px 5px; border-radius: 20px; text-align: center; }
         .console-item i { font-size: 22px; color: var(--primary); margin-bottom: 8px; display: block; }
-        .console-item b { font-size: 16px; display: block; margin-bottom: 2px; }
-        .console-item span { font-size: 9px; text-transform: uppercase; font-weight: 800; opacity: 0.5; letter-spacing: 0.5px; }
+        .console-item b { font-size: 16px; display: block; }
+        .console-item span { font-size: 9px; text-transform: uppercase; font-weight: 800; opacity: 0.5; }
 
-        /* BOTONES DEL HUB - ESTILO FOTO 1 */
-        .container {
-            width: 92%; max-width: 450px; margin-top: 25px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-            padding-bottom: 120px;
-        }
-        .hub-card {
-            background: var(--card); padding: 35px 15px; border-radius: 25px;
-            text-align: center; text-decoration: none; color: white;
-            border: 1px solid var(--border); display: flex;
-            flex-direction: column; align-items: center; transition: 0.3s;
-        }
+        /* GRILLA HUB */
+        .container { width: 92%; max-width: 450px; margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding-bottom: 120px; }
+        .hub-card { background: var(--card); padding: 35px 15px; border-radius: 25px; text-align: center; text-decoration: none; color: white; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
         .hub-card i { font-size: 35px; margin-bottom: 15px; color: var(--primary); }
         .hub-card span { font-weight: 700; font-size: 13px; letter-spacing: 1px; }
-        .hub-card:active { transform: scale(0.92); background: #1a252c; border-color: var(--primary); }
 
-        /* LOGIN - ESTILO LIMPIO */
+        /* LOGIN Y CERRAR SESIÓN */
         .modal { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-content { background: var(--card); padding: 40px 30px; border-radius: 30px; width: 88%; max-width: 360px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 0 40px rgba(37, 99, 235, 0.2); }
+        .modal-content { background: var(--card); padding: 40px 30px; border-radius: 30px; width: 88%; max-width: 360px; text-align: center; border: 1px solid var(--primary); }
         input { width: 100%; padding: 18px; margin: 25px 0; border-radius: 15px; border: 1px solid var(--border); background: #000; color: white; font-size: 24px; text-align: center; outline: none; }
-        .btn-login { width: 100%; padding: 18px; border-radius: 15px; background: var(--primary); color: white; border: none; font-weight: 800; font-size: 16px; cursor: pointer; }
+        .btn-login { width: 100%; padding: 18px; border-radius: 15px; background: var(--primary); color: white; border: none; font-weight: 800; }
         
+        #btn-logout { margin: 30px 0; padding: 15px; width: 90%; max-width: 400px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 15px; font-weight: 800; cursor: pointer; }
         .hidden { display: none !important; }
-        #logout-btn { margin-top: 30px; color: var(--danger); font-size: 12px; font-weight: 800; cursor: pointer; opacity: 0.6; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="modal">
         <div class="modal-content">
-            <div style="background: var(--primary); width: 60px; height: 60px; border-radius: 15px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-shield-alt" style="font-size: 30px; color: white;"></i>
-            </div>
-            <h2 style="font-weight: 800;">PANEL DE CONTROL</h2>
+            <h2 style="font-weight: 800;">ACCESO HUB</h2>
             <input type="password" id="pass" placeholder="••••" inputmode="numeric">
             <button class="btn-login" onclick="login()">ENTRAR</button>
         </div>
@@ -95,87 +50,83 @@
     <div id="main-hub" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <header>
             <div class="btn-sync" onclick="location.reload(true)"><i class="fas fa-sync-alt"></i></div>
-            <p style="color: var(--success); font-size: 10px; font-weight: 800; margin-bottom: 5px; letter-spacing: 2px;">● CONECTADO</p>
+            <p style="color: var(--success); font-size: 10px; font-weight: 800; margin-bottom: 5px;">SISTEMA ACTIVO</p>
             <h1 style="font-size: 20px; font-weight: 900;">URQUIZA 4750</h1>
         </header>
 
         <div class="console-container">
             <div class="console-item"><i class="fas fa-car"></i><b id="stat-cocheras">--</b><span>Libres</span></div>
-            <div class="console-item"><i class="fas fa-calendar-check"></i><b id="stat-sum">--</b><span>S.U.M.</span></div>
+            <div class="console-item"><i class="fas fa-calendar-alt"></i><b id="stat-sum">--</b><span>S.U.M.</span></div>
             <div class="console-item"><i class="fas fa-tools"></i><b id="stat-obras">--</b><span>Obras</span></div>
         </div>
 
         <div class="container">
-            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-alt"></i><span>RESERVAS</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-check"></i><span>RESERVAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-parking"></i><span>COCHERA</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>OBRAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
         </div>
 
-        <div id="logout-btn" onclick="logout()">FINALIZAR SESIÓN</div>
+        <button id="btn-logout" onclick="logout()">CERRAR SESIÓN</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDxw26xM3pliNxo79LdvWkr0uOGdvCgiIo", authDomain: "gestionuf-remoto.firebaseapp.com", projectId: "gestionuf-remoto" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        function cargarConsola() {
+        // LLAVE MAESTRA DE LIMPIEZA
+        const SESSION_KEY = "hub_v_final_reset"; 
+
+        function cargarDatos() {
             // COCHERAS
             onSnapshot(collection(db, "departamentos"), (snap) => {
-                const libres = snap.docs.filter(d => {
-                    const u = parseInt(d.data().UF);
-                    return u <= 87 && (!d.data().Inquilino || d.data().Inquilino.trim() === "");
-                }).length;
+                const libres = snap.docs.filter(d => parseInt(d.data().UF) <= 87 && (!d.data().Inquilino || d.data().Inquilino.trim() === "")).length;
                 document.getElementById("stat-cocheras").innerText = libres;
             });
 
-            // SUM (Lógica forzada: trae todo y filtra en el cel)
+            // RESERVA SUM (CORREGIDA)
             const hoy = new Date().toISOString().split('T');
             onSnapshot(collection(db, "reservas_salon"), (snap) => {
-                const items = snap.docs.map(d => d.data());
-                // Filtramos fechas futuras y ordenamos la más cercana
-                const futuras = items.filter(r => r.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha));
+                const proximas = snap.docs.map(d => d.data())
+                    .filter(r => r.fecha >= hoy)
+                    .sort((a,b) => a.fecha.localeCompare(b.fecha));
                 
                 const el = document.getElementById("stat-sum");
-                if (futuras.length > 0) {
-                    const prox = futuras;
-                    el.innerText = prox.fecha === hoy ? "HOY" : prox.fecha.split('-').reverse().slice(0,2).join('/');
-                    el.style.color = prox.fecha === hoy ? "var(--danger)" : "var(--warning)";
-                } else {
-                    el.innerText = "S/R";
-                    el.style.color = "var(--success)";
-                }
+                if (proximas.length > 0) {
+                    const p = proximas;
+                    el.innerText = p.fecha === hoy ? "HOY" : p.fecha.split('-').reverse().slice(0,2).join('/');
+                    el.style.color = p.fecha === hoy ? "var(--danger)" : "var(--warning)";
+                } else { el.innerText = "S/R"; el.style.color = "var(--success)"; }
             });
 
-            // OBRAS
+            // REPARACIONES
             onSnapshot(collection(db, "reparaciones"), (snap) => {
                 const p = snap.docs.filter(d => d.data().estado === "Pendiente").length;
-                const el = document.getElementById("stat-obras");
-                el.innerText = p;
-                el.style.color = p > 0 ? "var(--danger)" : "var(--success)";
+                document.getElementById("stat-obras").innerText = p;
+                document.getElementById("stat-obras").style.color = p > 0 ? "var(--danger)" : "var(--success)";
             });
         }
 
         window.login = () => {
             if (document.getElementById("pass").value === "4750") {
-                localStorage.setItem("session_vFinal_2026", "true");
+                localStorage.setItem(SESSION_KEY, "active");
                 location.reload();
-            } else { alert("Clave Incorrecta"); }
+            } else { alert("Error"); }
         };
 
-        window.logout = () => { 
-            localStorage.removeItem("session_vFinal_2026"); 
-            location.reload(); 
+        window.logout = () => {
+            localStorage.removeItem(SESSION_KEY);
+            location.reload();
         };
 
-        if (localStorage.getItem("session_vFinal_2026") === "true") {
+        if (localStorage.getItem(SESSION_KEY) === "active") {
             document.getElementById("login-screen").classList.add("hidden");
             document.getElementById("main-hub").classList.remove("hidden");
-            cargarConsola();
+            cargarDatos();
         }
     </script>
 </body>
