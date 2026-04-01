@@ -170,7 +170,7 @@
             });
 
             onSnapshot(collection(db, "reparaciones"), (snap) => {
-                const p = snap.docs.filter(d => (d.data().estado || d.data().Estado) === "Pendiente").length;
+                const p = snap.docs.filter(d => ["Pendiente", "En Proceso"].includes(d.data().estado || d.data().Estado)).length;
                 const el = document.getElementById("stat-obras");
                 el.innerText = p;
                 el.style.color = p > 0 ? "var(--danger)" : "var(--success)";
