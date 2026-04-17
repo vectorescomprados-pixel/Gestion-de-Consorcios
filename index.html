@@ -19,6 +19,7 @@
             --success: #22c55e; --danger: #e11d48; --text: #e9edef;
             --border: #2a3942; --warning: #f59e0b; --modal-bg: #182229;
             --label: #8696a0;
+            --orange: #f97316;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -39,15 +40,21 @@
         .hub-card:active { transform: scale(0.95); background: #1c272e; }
         .hub-card i { font-size: 30px; margin-bottom: 10px; color: var(--primary); display: block; }
         
-        .hub-card-wide { grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 15px; padding: 20px; border-color: var(--warning); }
-        .hub-card-wide i { margin: 0; font-size: 24px; color: var(--warning); }
+        .hub-card-wide { grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 15px; padding: 20px; }
+        .hub-card-wide i { margin: 0; font-size: 24px; }
+        
+        /* Estilos específicos para los botones anchos */
+        .card-mudanzas { border-color: var(--orange); }
+        .card-mudanzas i { color: var(--orange); }
+        
+        .card-infracciones { border-color: var(--warning); }
+        .card-infracciones i { color: var(--warning); }
 
         .logout-trigger { margin: 20px 0 50px 0; color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid var(--danger); padding: 12px 25px; border-radius: 15px; background: none; text-transform: uppercase; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
         .modal-content { background: var(--card); padding: 30px; border-radius: 30px; width: 100%; max-width: 380px; text-align: center; border: 1px solid #232d36; }
         
-        /* Estilos específicos para las fichas de obra */
         .list-scroll { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
         .ficha-registro { background: #1c272e; border: 1px solid #2a3942; border-radius: 15px; padding: 15px; margin-bottom: 12px; text-align: left; }
         .campo { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 3px; }
@@ -104,11 +111,18 @@
         </div>
 
         <div class="container">
-            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-alt"></i><span>RESERVAS</span></a>
+            <a href="https://vectorescomprados-pixel.github.io/reservas_salon/" class="hub-card"><i class="fas fa-calendar-alt"></i><span>RESERVAS SUM</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-de-cocheras/" class="hub-card"><i class="fas fa-parking"></i><span>COCHERA</span></a>
             <a href="https://vectorescomprados-pixel.github.io/Gestion-Integral-de-Reparaciones/" class="hub-card"><i class="fas fa-hammer"></i><span>OBRAS</span></a>
             <a href="https://vectorescomprados-pixel.github.io/GestionUF-Comercial/" class="hub-card"><i class="fas fa-users-cog"></i><span>UNIDADES</span></a>
-            <a href="https://vectorescomprados-pixel.github.io/Sistema-de-Infracciones/" class="hub-card hub-card-wide"><i class="fas fa-exclamation-triangle"></i><span>GESTIÓN DE INFRACCIONES</span></a>
+            
+            <a href="https://vectorescomprados-pixel.github.io/reservas_mudanzas/" class="hub-card hub-card-wide card-mudanzas">
+                <i class="fas fa-truck-moving"></i><span>GESTIÓN DE MUDANZAS</span>
+            </a>
+            
+            <a href="https://vectorescomprados-pixel.github.io/Sistema-de-Infracciones/" class="hub-card hub-card-wide card-infracciones">
+                <i class="fas fa-exclamation-triangle"></i><span>GESTIÓN DE INFRACCIONES</span>
+            </a>
         </div>
 
         <button class="logout-trigger" onclick="abrirCartel()">Cerrar Sesión</button>
@@ -136,7 +150,6 @@
         }
 
         function iniciar() {
-            // Escuchar departamentos para Cocheras y Mapa de Nombres
             onSnapshot(collection(db, "departamentos"), (snap) => {
                 let libres = 0;
                 snap.docs.forEach(d => {
@@ -168,7 +181,6 @@
                 } else { el.innerText = "S/R"; el.style.color = "var(--success)"; }
             });
 
-            // Escuchar reparaciones y activar clic en consola
             onSnapshot(collection(db, "reparaciones"), (snap) => {
                 listaReparaciones = snap.docs
                     .filter(d => ["Pendiente", "En Proceso"].includes(d.data().estado || d.data().Estado))
@@ -180,7 +192,6 @@
                 el.style.color = p > 0 ? "var(--danger)" : "var(--success)";
             });
 
-            // Lógica para abrir el modal al hacer clic en el círculo de Obras
             document.getElementById("btn-ver-reparaciones").onclick = () => {
                 const listado = document.getElementById("lista-reparaciones");
                 listado.innerHTML = "";
